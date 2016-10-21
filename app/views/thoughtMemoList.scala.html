@@ -1,0 +1,9 @@
+@*
+ * メモ一覧画面.
+*@
+@()(implicit request: RequestHeader, messages: Messages, webJarAssets: WebJarAssets)
+@main("メモ一覧"){
+    <div>
+        <a href="@routes.EditThoughtMemoController.edit(1)">メモ１</a>
+    </div>
+}

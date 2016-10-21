@@ -39,4 +39,33 @@ class ApplicationSpec extends PlaySpec with OneAppPerTest {
 
   }
 
+  "LoginController" should {
+    "render login page" in {
+      val home = route(app, FakeRequest(GET, "/login")).get
+
+      status(home) mustBe OK
+      contentType(home) mustBe Some("text/html")
+      contentAsString(home) must include("ログイン画面")
+    }
+    "login and redirect to MemoList" in {
+      val home = route(app, FakeRequest(POST, "/login")).get
+
+      status(home) mustBe SEE_OTHER // redirect
+    }
+  }
+
+  "ThoughtMemoListController" should {
+    "render memo list page" in {
+      val home = route(app, FakeRequest(GET, "/list")).get
+
+      status(home) mustBe OK
+      contentType(home) mustBe Some("text/html")
+      contentAsString(home) must include("メモ一覧")
+    }
+  }
+
+  "EditThoughtMemoController" should {
+    
+  }
+
 }

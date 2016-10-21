@@ -1,0 +1,19 @@
+@*
+ * メモ作成画面.
+*@
+@(id: Long)(implicit request: RequestHeader, messages: Messages, webJarAssets: WebJarAssets, flash:Flash)
+@import helper._
+
+@main("メモ作成画面"){
+    <div>
+        <p>タイトル</p>
+        <p>日付</p>
+        <p>本文</p>
+        <p>文字数</p>
+        <p>本日１つめのメモです。</p>
+        <p>タイマー：残り５９秒</p>
+        @form(action=routes.EditThoughtMemoController.register){
+            <input type="submit" value="登録"></input>
+        }
+    </div>
+}
