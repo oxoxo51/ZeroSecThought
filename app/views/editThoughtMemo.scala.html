@@ -1,19 +1,53 @@
 @*
  * メモ作成画面.
 *@
-@(id: Long)(implicit request: RequestHeader, messages: Messages, webJarAssets: WebJarAssets, flash:Flash)
+@(memoForm: Form[forms.MemoForm])(implicit request: RequestHeader, messages: Messages, webJarAssets: WebJarAssets, flash:Flash)
 @import helper._
 
-@main("メモ作成画面"){
+@main("メモ作成・編集画面"){
+
+<script type="text/javascript">
+	$(function(){
+	    $('textarea').bind('keydown keyup keypress change load', function(){
+	        var thisValueLength = $(this).val().length;
+	        $('#inputLength').html(thisValueLength + '文字')
+	    })
+	});
+</script>
+    @if(memoForm("command").value.getOrElse("")=="C") {
+        <p>メモ作成</p>
+    }else{
+        <p>メモ編集</p>
+    }
+
     <div>
-        <p>タイトル</p>
-        <p>日付</p>
-        <p>本文</p>
-        <p>文字数</p>
+    @form(action=routes.EditThoughtMemoController.register()){
+        <input type="hidden" name="command" value="@memoForm("command").value">
+        <input type="hidden" name="db.id" value="@memoForm("db.id").value">
+
+        @(inputText(
+            memoForm("db.title"),
+            '_label -> "タイトル"
+        ))
+        @(inputDate(
+            memoForm("db.createDate"),
+            '_label -> "日付",
+            'readonly -> true
+        ))
+        @input(
+            memoForm("db.content"),
+            '_label -> "本文"
+        ) {(id, name, value, args)  =>
+            <textarea id="@id" name="@name" cols="100" rows="5" @toHtmlArgs(args)>@value</textarea>
+        }
+        <p id="inputLength">0文字</p>
+
+        <!-- TODO 要修正-->
         <p>本日１つめのメモです。</p>
         <p>タイマー：残り５９秒</p>
-        @form(action=routes.EditThoughtMemoController.register){
-            <input type="submit" value="登録"></input>
-        }
+        <!-- TODO 要修正-->
+
+        <input type="submit" value="登録"></input>
+    }
     </div>
 }

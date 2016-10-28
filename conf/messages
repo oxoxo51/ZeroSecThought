@@ -1,0 +1,4 @@
+error.notfound = レコードがありません。
+error.invalid = 入力に不備があります。エラーの内容を確認してください。
+success.create = {0} を作成しました。
+success.update = {0} を更新しました。

@@ -1,9 +1,16 @@
 @*
  * メモ一覧画面.
 *@
-@()(implicit request: RequestHeader, messages: Messages, webJarAssets: WebJarAssets)
+@(memos: List[models.Memo])(implicit request: RequestHeader, messages: Messages, webJarAssets: WebJarAssets)
 @main("メモ一覧"){
-    <div>
-        <a href="@routes.EditThoughtMemoController.edit(1)">メモ１</a>
-    </div>
+<div>
+    <ul>
+        @for(memo <- memos){
+        <li>
+            <a href="@routes.EditThoughtMemoController.displayEdit(memo.id.getOrElse(0))">@memo.title / @memo.content / @memo.createDate</a>
+        </li>
+        }
+    </ul>
+    <a href="@routes.EditThoughtMemoController.displayEdit(0)">新規作成</a>
+</div>
 }
