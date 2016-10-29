@@ -8,11 +8,21 @@
 
 <script type="text/javascript">
 	$(function(){
-	    $('textarea').bind('keydown keyup keypress change load', function(){
-	        var thisValueLength = $(this).val().length;
-	        $('#inputLength').html(thisValueLength + '文字')
+	    // 初期表示時点の文字数
+		var initLength = $('textarea#db_content').val().length;
+	    $('span#inputLength').text(initLength)
+	    // 入力中の文字数
+	    $('textarea#db_content').on('load keydown keyup keypress change', function(){
+	        var inLength = $(this).val().length;
+	        $('span#inputLength').text(inLength)
 	    })
+	    // 経過時間カウント
+	    var sec = 0;
+	    setInterval(function(){
+	        $('span#elapsedTime').text(++sec);
+	    },1000);
 	});
+
 </script>
     @if(memoForm("command").value.getOrElse("")=="C") {
         <p>メモ作成</p>
@@ -40,14 +50,12 @@
         ) {(id, name, value, args)  =>
             <textarea id="@id" name="@name" cols="100" rows="5" @toHtmlArgs(args)>@value</textarea>
         }
-        <p id="inputLength">0文字</p>
-
-        <!-- TODO 要修正-->
+        <p><span id="inputLength">0</span>文字</p>
+        @* CREATE時のみ日毎の作成数、経過時間表示 *@
         @if(memoForm("command").value.getOrElse("")=="C"){
             <p>本日@{count.getOrElse(0)+1}つめのメモです。</p>
-            <p>タイマー：残り５９秒</p>
+            <p><span id="elapsedTime"></span>秒経過</p>
         }
-        <!-- TODO 要修正-->
 
         <input type="submit" value="登録"></input>
     }
