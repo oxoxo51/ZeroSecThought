@@ -1,7 +1,6 @@
 package models.daos
 
-import java.sql.Timestamp
-import java.util.Date
+import java.sql.{Date, Timestamp}
 import javax.inject.Inject
 
 import models.Memo
@@ -9,7 +8,8 @@ import play.api.db.slick.DatabaseConfigProvider
 import slick.driver.JdbcProfile
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
-import scala.concurrent.Future
+import scala.concurrent.duration.Duration
+import scala.concurrent.{Await, Future}
 
 /**
   * Created on 16/10/24.
@@ -36,6 +36,12 @@ class MemoDao @Inject()(dbConfigProvider: DatabaseConfigProvider) {
 
   def getMemos(): Future[List[Memo]] =
     dbConfig.db.run(memos.result).map(_.toList)
+
+  def getCount(today: Date): Int =
+    Await.result(
+      dbConfig.db.run(memos.filter(_.createDate === today).length.result),
+      Duration.Inf
+    )
 
   def byId(id: Long): Future[Option[Memo]] =
     dbConfig.db.run(memos.filter(_.id === id).result.headOption)

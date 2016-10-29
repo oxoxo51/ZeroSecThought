@@ -1,7 +1,7 @@
 @*
  * メモ作成画面.
 *@
-@(memoForm: Form[forms.MemoForm])(implicit request: RequestHeader, messages: Messages, webJarAssets: WebJarAssets, flash:Flash)
+@(memoForm: Form[forms.MemoForm], count: Option[Int])(implicit request: RequestHeader, messages: Messages, webJarAssets: WebJarAssets, flash:Flash)
 @import helper._
 
 @main("メモ作成・編集画面"){
@@ -43,8 +43,10 @@
         <p id="inputLength">0文字</p>
 
         <!-- TODO 要修正-->
-        <p>本日１つめのメモです。</p>
-        <p>タイマー：残り５９秒</p>
+        @if(memoForm("command").value.getOrElse("")=="C"){
+            <p>本日@{count.getOrElse(0)+1}つめのメモです。</p>
+            <p>タイマー：残り５９秒</p>
+        }
         <!-- TODO 要修正-->
 
         <input type="submit" value="登録"></input>

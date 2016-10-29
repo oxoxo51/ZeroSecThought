@@ -24,21 +24,34 @@ class EditThoughtMemoController @Inject() (
   implicit val webJarAssets: WebJarAssets)
   extends Controller with I18nSupport {
 
+  val today = new Date(new java.util.Date().getTime())
+
   def displayEdit(id: Long) = Action.async {
     implicit request =>
-      dao.byId(id).map(
-        option => option match {
-          case Some(memo) =>
-            // UPDATE
-            Logger.debug(memo.id + "/" + memo.title + "/" + memo.content + "/" + memo.createDate)
-            Ok(views.html.editThoughtMemo(MemoForms.memoForm.fill(
-              MemoForm(Some("U"), memo))))
-          case None =>
-            // CREATE
-            Ok(views.html.editThoughtMemo(MemoForms.memoForm.fill(
-              MemoForm(Some("C"), new Memo(None, "", "", new Date(new java.util.Date().getTime()))))))
-        }
-      )
+      if (id==0) {
+        Future(Ok(views.html.editThoughtMemo(
+          MemoForms.memoForm.fill(
+            MemoForm(Some("C"), new Memo(None, "", "", today))
+          ), Option(dao.getCount(today))
+        )))
+      } else {
+        dao.byId(id).map(
+          option => option match {
+            case Some(memo) =>
+              // UPDATE
+              Logger.debug(memo.id + "/" + memo.title + "/" + memo.content + "/" + memo.createDate)
+              Ok(views.html.editThoughtMemo(
+                MemoForms.memoForm.fill(
+                  MemoForm(Some("U"), memo)
+                ), None
+              ))
+            case None =>
+              // 見つからない場合（IDをURLに適当に指定した場合）
+              Redirect(routes.ApplicationController.index())
+                .flashing(Constant.MSG_ERROR -> Messages("error.notfound"))
+          }
+        )
+      }
   }
 
   def register = Action.async {
@@ -46,8 +59,9 @@ class EditThoughtMemoController @Inject() (
       MemoForms.memoForm.bindFromRequest.fold(
         formWithErrors => {
           Logger.debug("***** register: 入力不備 *****")
-          Future(BadRequest(views.html.editThoughtMemo(formWithErrors)))
-
+          Future(BadRequest(views.html.editThoughtMemo(
+            formWithErrors, Option(dao.getCount(today))
+          )))
         },
         formValue => {
           formValue.command match {
@@ -55,14 +69,17 @@ class EditThoughtMemoController @Inject() (
               Logger.debug("***** register: case update *****")
               dao.update(formValue.memo).map(_ =>
                 Redirect(routes.ApplicationController.index())
-                  .flashing(Constant.MSG_SUCCESS ->  Messages("success.update", formValue.memo.title))
+                  .flashing(Constant.MSG_SUCCESS
+                    ->  Messages("success.update", formValue.memo.title))
               )
             case Some("C") =>
               Logger.debug("***** register: case create *****")
               dao.create(formValue.memo).map(_ =>
                 Redirect(routes.ApplicationController.index())
-                  .flashing(Constant.MSG_SUCCESS ->  Messages("success.create", formValue.memo.title))
-              )            case _ =>
+                  .flashing(Constant.MSG_SUCCESS
+                    ->  Messages("success.create", formValue.memo.title))
+              )
+            case _ =>
               Logger.debug("***** register: case other *****")
               Future(Redirect(routes.ApplicationController.index()))
           }
