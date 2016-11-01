@@ -1,16 +1,60 @@
 @*
  * メモ一覧画面.
 *@
-@(memos: List[models.Memo])(implicit request: RequestHeader, messages: Messages, webJarAssets: WebJarAssets)
+@(memos: List[models.Memo], msForm: Form[forms.MemoSearchForm])(implicit request: RequestHeader, messages: Messages, webJarAssets: WebJarAssets)
+@import helper._
+
 @main("メモ一覧"){
 <div>
-    <ul>
-        @for(memo <- memos){
-        <li>
-            <a href="@routes.EditThoughtMemoController.displayEdit(memo.id.getOrElse(0))">@memo.title / @memo.content / @memo.createDate</a>
-        </li>
-        }
-    </ul>
+    <div>検索条件</div>
+    @form(action=routes.ApplicationController.search){
+    <table>
+        <tr>
+            <td>
+                @(inputDate(
+                    msForm("conditionDateFrom"),
+                    '_label -> "日付"
+                ))
+            </td>
+            <td>
+                〜
+            </td>
+            <td>
+                @(inputDate(
+                    msForm("conditionDateTo"),
+                    '_label -> ""
+                ))
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                @(inputText(
+                    msForm("conditionTitle"),
+                    '_label -> "タイトル"
+                ))
+            </td>
+            <td>
+                @(inputText(
+                    msForm("conditionContent"),
+                    '_label -> "本文"
+                ))
+            </td>
+        </tr>
+
+
+    </table>
+        <input type="submit" value="検索"></input>
+    }
+</div>
+    <div>
+        <div>検索結果</div>
+        <ul>
+            @for(memo <- memos){
+            <li>
+                <a href="@routes.EditThoughtMemoController.displayEdit(memo.id.getOrElse(0))">@memo.title / @memo.content / @memo.createDate</a>
+            </li>
+            }
+        </ul>
     <a href="@routes.EditThoughtMemoController.displayEdit(0)">新規作成</a>
 </div>
 }

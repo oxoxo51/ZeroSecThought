@@ -34,22 +34,67 @@ class MemoDao @Inject()(dbConfigProvider: DatabaseConfigProvider) {
 
   private val memos = TableQuery[MemoTable]
 
+  /**
+    * 全件取得.
+    * @return
+    */
   def getMemos(): Future[List[Memo]] =
     dbConfig.db.run(memos.result).map(_.toList)
 
+  /**
+    * 条件検索.
+    * @param conditionDateFrom
+    * @param conditionDateTo
+    * @param conditionTitle
+    * @param conditionContent
+    * @return
+    */
+  def findMemos(
+    conditionDateFrom: Option[Date],
+    conditionDateTo: Option[Date],
+    conditionTitle: Option[String],
+    conditionContent: Option[String]): Future[List[Memo]] = {
+    dbConfig.db.run(memos.filter( row =>
+         (row.createDate >= conditionDateFrom.getOrElse(java.sql.Date.valueOf("1900-01-01")))
+      && (row.createDate <= conditionDateTo.getOrElse(java.sql.Date.valueOf("9999-12-31")))
+      && (row.title like s"%${conditionTitle.getOrElse("")}%")
+      && (row.content like s"%${conditionContent.getOrElse("")}%")
+    ).result).map(_.toList)
+  }
+
+  /**
+    * 当日のメモ件数取得.
+    * @param today
+    * @return
+    */
   def getCount(today: Date): Int =
     Await.result(
       dbConfig.db.run(memos.filter(_.createDate === today).length.result),
       Duration.Inf
     )
 
+  /**
+    * IDによる取得.
+    * @param id
+    * @return
+    */
   def byId(id: Long): Future[Option[Memo]] =
     dbConfig.db.run(memos.filter(_.id === id).result.headOption)
 
+  /**
+    * CREATE.
+    * @param memo
+    * @return
+    */
   def create(memo: Memo): Future[Int] = {
     dbConfig.db.run(memos += memo)
   }
 
+  /**
+    * UPDATE.
+    * @param memo
+    * @return
+    */
   def update(memo: Memo): Future[Int] = {
     dbConfig.db.run(memos.filter(_.id === memo.id).map(
       m => (
@@ -63,6 +108,11 @@ class MemoDao @Inject()(dbConfigProvider: DatabaseConfigProvider) {
     )
   }
 
+  /**
+    * DELETE.
+    * @param id
+    * @return
+    */
   def delete(id: Long): Future[Int] =
     dbConfig.db.run(memos.filter(_.id === id).delete)
 }

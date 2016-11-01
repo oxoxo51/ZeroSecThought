@@ -2,6 +2,7 @@ package controllers
 
 import javax.inject.Inject
 
+import forms.{MemoSearchForms, MemoSearchForm}
 import models.daos.MemoDao
 import play.api.Logger
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -21,7 +22,39 @@ class ApplicationController @Inject() (
   def index = Action.async { implicit request =>
     Logger.debug("***** access index *****")
     dao.getMemos().flatMap(memos =>
-      Future.successful(Ok(views.html.thoughtMemoList(memos)))
+      Future.successful(Ok(views.html.thoughtMemoList(
+        memos,
+        MemoSearchForms.memoSearchForm
+      )))
+    )
+  }
+
+  def search = Action.async { implicit request =>
+    MemoSearchForms.memoSearchForm.bindFromRequest.fold(
+      formWithErrors => {
+        Future(BadRequest(views.html.thoughtMemoList(
+          null, formWithErrors
+        )))
+      },
+      formValue => {
+        dao.findMemos(
+          formValue.conditionDateFrom,
+          formValue.conditionDateTo,
+          formValue.conditionTitle,
+          formValue.conditionContent
+        ).flatMap(memos =>
+          Future.successful(Ok(views.html.thoughtMemoList(
+            memos,
+            MemoSearchForms.memoSearchForm.fill(
+              MemoSearchForm(
+                formValue.conditionDateFrom,
+                formValue.conditionDateTo,
+                formValue.conditionTitle,
+                formValue.conditionContent
+              )
+            ))))
+        )
+      }
     )
   }
 
