@@ -16,17 +16,18 @@ object MemoForms {
       "command" -> optional(text),
       "db" -> mapping(
         "id" -> optional(longNumber),
+        "parentId" -> optional(longNumber),
         "title" -> nonEmptyText,
         "content" -> nonEmptyText,
         "createDate" -> sqlDate("yyyy-MM-dd")
       )
       (
-        (id, title, content, createDate)
-        => new Memo(id, title, content, createDate)
+        (id, parentId, title, content, createDate)
+        => new Memo(id, parentId, title, content, createDate)
       )
       (
         (m: Memo)
-        => Some(m.id, m.title, m.content, m.createDate)
+        => Some(m.id, m.parentId, m.title, m.content, m.createDate)
       )
     )(MemoForm.apply)(MemoForm.unapply)
   )

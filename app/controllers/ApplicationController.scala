@@ -3,6 +3,7 @@ package controllers
 import javax.inject.Inject
 
 import forms.{MemoSearchForms, MemoSearchForm}
+import models.Memo
 import models.daos.MemoDao
 import play.api.Logger
 import play.api.i18n.{I18nSupport, MessagesApi}

@@ -12,7 +12,8 @@ import play.api.i18n.{Messages, I18nSupport, MessagesApi}
 import play.api.mvc.{Action, Controller}
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
-import scala.concurrent.Future
+import scala.concurrent.{Await, Future}
+import scala.concurrent.duration.Duration
 
 /**
   * Created on 16/09/22.
@@ -31,8 +32,9 @@ class EditThoughtMemoController @Inject() (
       if (id==0) {
         Future(Ok(views.html.editThoughtMemo(
           MemoForms.memoForm.fill(
-            MemoForm(Some("C"), new Memo(None, "", "", today))
-          ), Option(dao.getCount(today))
+            MemoForm(Some("C"), new Memo(None, None, "", "", today))
+          ), Option(dao.getCount(today)),
+             Await.result(dao.getMemos(), Duration.Inf)
         )))
       } else {
         dao.byId(id).map(
@@ -43,7 +45,7 @@ class EditThoughtMemoController @Inject() (
               Ok(views.html.editThoughtMemo(
                 MemoForms.memoForm.fill(
                   MemoForm(Some("U"), memo)
-                ), None
+                ), None, Await.result(dao.getMemos(), Duration.Inf)
               ))
             case None =>
               // 見つからない場合（IDをURLに適当に指定した場合）
@@ -60,7 +62,7 @@ class EditThoughtMemoController @Inject() (
         formWithErrors => {
           Logger.debug("***** register: 入力不備 *****")
           Future(BadRequest(views.html.editThoughtMemo(
-            formWithErrors, Option(dao.getCount(today))
+            formWithErrors, Option(dao.getCount(today)), Await.result(dao.getMemos(), Duration.Inf)
           )))
         },
         formValue => {

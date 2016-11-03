@@ -1,8 +1,10 @@
 @*
  * メモ作成画面.
 *@
-@(memoForm: Form[forms.MemoForm], count: Option[Int])(implicit request: RequestHeader, messages: Messages, webJarAssets: WebJarAssets, flash:Flash)
+@(memoForm: Form[forms.MemoForm], count: Option[Int], memoList: List[models.Memo])(implicit request: RequestHeader, messages: Messages, webJarAssets: WebJarAssets, flash:Flash)
 @import helper._
+@import scala.concurrent.Await
+@import scala.concurrent.duration.Duration
 
 @main("メモ作成・編集画面"){
 
@@ -39,6 +41,16 @@
             memoForm("db.title"),
             '_label -> "タイトル"
         ))
+        @{
+        var optionSeq: Seq[(String, String)] = Seq(("0", ""))
+        memoList.foreach(memo => (optionSeq :+= (memo.id.get.toString, memo.title)))
+
+        select(
+            memoForm("db.parentId"),
+            options = optionSeq,
+            '_label -> "親メモ"
+        )
+        }
         @(inputDate(
             memoForm("db.createDate"),
             '_label -> "日付",

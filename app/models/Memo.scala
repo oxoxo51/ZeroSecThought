@@ -6,8 +6,8 @@ package models
 case class Memo
 (
   id: Option[Long],
+  parentId: Option[Long],
   title: String,
   content: String,
   createDate: java.sql.Date
-// TODO 親子関係
 )

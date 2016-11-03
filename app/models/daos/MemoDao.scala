@@ -26,10 +26,11 @@ class MemoDao @Inject()(dbConfigProvider: DatabaseConfigProvider) {
 
   private class MemoTable(tag: Tag) extends Table[Memo](tag, "MEMO") {
     def id = column[Long]("ID", O.PrimaryKey, O.AutoInc)
+    def parentId = column[Long]("PARENT_ID")
     def title = column[String]("TITLE")
     def content = column[String]("CONTENT")
     def createDate = column[java.sql.Date]("CREATE_DATE")
-    def * = (id.?, title, content, createDate) <> ((Memo.apply _).tupled, Memo.unapply)
+    def * = (id.?, parentId.?, title, content, createDate) <> ((Memo.apply _).tupled, Memo.unapply)
   }
 
   private val memos = TableQuery[MemoTable]
@@ -98,10 +99,12 @@ class MemoDao @Inject()(dbConfigProvider: DatabaseConfigProvider) {
   def update(memo: Memo): Future[Int] = {
     dbConfig.db.run(memos.filter(_.id === memo.id).map(
       m => (
+        m.parentId,
         m.title,
         m.content
         )
     ).update(
+      memo.parentId.getOrElse(0),
       memo.title,
       memo.content
       )
