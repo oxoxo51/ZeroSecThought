@@ -1,1 +1,1 @@
-web: target/universal/stage/bin/zerosecthought -Dhttp.port=${PORT} -Dplay.crypto.secret=${APPLICATION_SECRET} -Dplay.evolutions.db.default.autoApply=true -Dslick.dbs.default.driver=slick.driver.PostgresDriver$ -Dslick.dbs.default.db.driver=org.postgresql.Driver  -Dslick.dbs.default.db.url=${DATABASE_URL}
+web: target/universal/stage/bin/zerosecthought -Dhttp.port=${PORT} -Dplay.crypto.secret=${APPLICATION_SECRET} -Dplay.evolutions.db.default.autoApply=true -Dconfig.resource=prod.conf
