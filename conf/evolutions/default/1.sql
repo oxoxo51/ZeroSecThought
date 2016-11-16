@@ -3,7 +3,8 @@
 # --- !Ups
 
 CREATE TABLE memo(
-    id                      bigint NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    id                      SERIAL NOT NULL PRIMARY KEY,
+--    id                      bigint NOT NULL PRIMARY KEY AUTO_INCREMENT,
     parent_id               bigint,
     title                   varchar,
     content                 varchar,
