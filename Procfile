@@ -1,1 +1,1 @@
-web: target/universal/stage/bin/zerosecthought -Dhttp.port=${PORT} -Dplay.crypto.secret=${APPLICATION_SECRET} -Dplay.evolutions.db.default.autoApply=true -Dconfig.resource=prod.conf -Dlogger.resource=prod.logback.xml
+web: target/universal/stage/bin/zerosecthought -Dhttp.port=${PORT} -Dplay.crypto.secret=${APPLICATION_SECRET} -Dplay.evolutions.db.default.autoApply=true -Dconfig.resource=prod.conf -Dlogger.resource=prod-logback.xml
