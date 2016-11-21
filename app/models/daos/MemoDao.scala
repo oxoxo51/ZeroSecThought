@@ -24,12 +24,12 @@ class MemoDao @Inject()(dbConfigProvider: DatabaseConfigProvider) {
     ts => new Date(ts.getTime)
   )
 
-  private class MemoTable(tag: Tag) extends Table[Memo](tag, "MEMO") {
-    def id = column[Long]("ID", O.PrimaryKey, O.AutoInc)
-    def parentId = column[Long]("PARENT_ID")
-    def title = column[String]("TITLE")
-    def content = column[String]("CONTENT")
-    def createDate = column[java.sql.Date]("CREATE_DATE")
+  private class MemoTable(tag: Tag) extends Table[Memo](tag, "memo") {
+    def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
+    def parentId = column[Long]("parent_id")
+    def title = column[String]("title")
+    def content = column[String]("content")
+    def createDate = column[java.sql.Date]("create_date")
     def * = (id.?, parentId.?, title, content, createDate) <> ((Memo.apply _).tupled, Memo.unapply)
   }
 

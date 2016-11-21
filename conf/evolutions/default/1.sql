@@ -2,13 +2,13 @@
 
 # --- !Ups
 
-CREATE TABLE memo(
-    id                      SERIAL NOT NULL PRIMARY KEY,
+CREATE TABLE MEMO(
+    ID                      SERIAL NOT NULL PRIMARY KEY,
 --    id                      bigint NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    parent_id               bigint,
-    title                   varchar,
-    content                 varchar,
-    create_date             date
+    PARENT_ID               bigint,
+    TITLE                   varchar,
+    CONTENT                 varchar,
+    CREATE_DATE             date
 );
 
 # --- !Downs
