@@ -2,9 +2,8 @@
 
 # --- !Ups
 
-CREATE TABLE MEMO(
+CREATE TABLE MEMO (
     ID                      SERIAL NOT NULL PRIMARY KEY,
---    id                      bigint NOT NULL PRIMARY KEY AUTO_INCREMENT,
     PARENT_ID               bigint,
     TITLE                   varchar,
     CONTENT                 varchar,
@@ -13,4 +12,4 @@ CREATE TABLE MEMO(
 
 # --- !Downs
 
-DROP TABLE memo;
+DROP TABLE MEMO;
