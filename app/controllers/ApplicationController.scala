@@ -3,10 +3,10 @@ package controllers
 import javax.inject.Inject
 
 import forms.{MemoSearchForms, MemoSearchForm}
-import models.Memo
 import models.daos.MemoDao
 import play.api.Logger
 import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.libs.json.Json
 import play.api.mvc.{Action, Controller}
 import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
@@ -22,14 +22,15 @@ class ApplicationController @Inject() (
 
   def index = Action.async { implicit request =>
     Logger.debug("***** access index *****")
-    dao.getMemos().flatMap(memos =>
-      Future.successful(Ok(views.html.thoughtMemoList(
-        memos,
-        MemoSearchForms.memoSearchForm
-      )))
-    )
+    Future.successful(Ok(views.html.thoughtMemoList()))
   }
 
+  def searchMemo = Action { implicit request =>
+    Logger.debug(request.body.asJson.toString)
+    Ok(Json.stringify(request.body.asJson.get))
+  }
+
+/*
   def search = Action.async { implicit request =>
     MemoSearchForms.memoSearchForm.bindFromRequest.fold(
       formWithErrors => {
@@ -58,5 +59,6 @@ class ApplicationController @Inject() (
       }
     )
   }
+*/
 
 }
