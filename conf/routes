@@ -3,7 +3,7 @@
 # ~~~~
 
 GET  /             controllers.ApplicationController.index
-POST /search       controllers.ApplicationController.search
+POST /search       controllers.ApplicationController.searchMemo
 
 GET  /edit/:id     controllers.EditThoughtMemoController.displayEdit(id: Long)
 POST /register     controllers.EditThoughtMemoController.register

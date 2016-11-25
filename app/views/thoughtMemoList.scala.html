@@ -1,12 +1,73 @@
 @*
  * メモ一覧画面.
 *@
-@(memos: List[models.Memo], msForm: Form[forms.MemoSearchForm])(implicit request: RequestHeader, messages: Messages, webJarAssets: WebJarAssets)
+@()(implicit request: RequestHeader, messages: Messages, webJarAssets: WebJarAssets)
 @import helper._
 
 @main("メモ一覧"){
+<script type="text/javascript">
+    $(function(){
+        $('#submitCondition').click(function(){
+            var conditionTitle = $('#conditionTitle').val();
+            var conditionContent = $('#conditionContent').val();
+            var conditionDateFrom = $('#conditionDateFrom').val();
+            var conditionDateTo = $('#conditionDateTo').val();
+            var jsondata = {
+                "conditionTitle": conditionTitle,
+                "conditionContent": conditionContent,
+                "conditionDateFrom": conditionDateFrom,
+                "conditionDateTo": conditionDateTo
+            };
+            $.ajax({
+                url: "@routes.ApplicationController.searchMemo",
+                type: 'POST',
+                data: jsondata,
+                complete: function(result){
+                    var htmlStr = "<tr><th>タイトル</th><th>内容</th><th>作成日</th></tr>";
+                    var resArr = result.responseJSON;
+                    for (var i = 0; i < resArr.length; i++) {
+                        htmlStr +=
+                            "<tr><td>"
+                            + "<a href='/edit/" + resArr[i].id + "'>" + resArr[i].title + "</a></td><td>"
+                            + resArr[i].content + "</td><td>"
+                            + resArr[i].createDate + "</td></tr>";
+                    }
+
+                    $('#searchResult').html(htmlStr);
+                }
+            });
+        });
+    });
+</script>
 <div>
     <div>検索条件</div>
+    <table>
+        <tr>
+            <td colspan="2">
+                <label for="conditionTitle">タイトル</label>
+                <input id="conditionTitle" type="text">
+            </td>
+            <td>
+                <label for="conditionContent">本文</label>
+                <input id="conditionContent" type="text">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="conditionDateFrom">日付</label>
+                <input id="conditionDateFrom" type="date">
+            </td>
+            <td>
+                〜
+            </td>
+            <td>
+                <label for="conditionDateTo"></label>
+                <input id="conditionDateTo" type="date">
+            </td>
+        </tr>
+    </table>
+    <button id="submitCondition">検索</button>
+@**
     @form(action=routes.ApplicationController.search){
     <table>
         <tr>
@@ -45,9 +106,12 @@
     </table>
         <input type="submit" value="検索"></input>
     }
+**@
 </div>
-    <div>
-        <div>検索結果</div>
+<div>
+    <div>検索結果</div>
+    <table id="searchResult">
+@**
         <ul>
             @for(memo <- memos){
             <li>
@@ -55,6 +119,8 @@
             </li>
             }
         </ul>
+**@
+    </table>
     <a href="@routes.EditThoughtMemoController.displayEdit(0)">新規作成</a>
 </div>
 }
