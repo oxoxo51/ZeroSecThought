@@ -7,7 +7,6 @@
 @import scala.concurrent.duration.Duration
 
 @main("メモ作成・編集画面"){
-
 <script type="text/javascript">
 	$(function(){
 	    // 初期表示時点の文字数
@@ -24,52 +23,75 @@
 	        $('span#elapsedTime').text(++sec);
 	    },1000);
 	});
-
 </script>
+<div class="page-header">
     @if(memoForm("command").value.getOrElse("")=="C") {
-        <p>メモ作成</p>
+        <h3>メモ作成</h3>
     }else{
-        <p>メモ編集</p>
+        <h3>メモ編集</h3>
     }
-
-    <div>
-    @form(action=routes.EditThoughtMemoController.register()){
-        <input type="hidden" name="command" value="@memoForm("command").value">
-        <input type="hidden" name="db.id" value="@memoForm("db.id").value">
-
-        @(inputText(
-            memoForm("db.title"),
-            '_label -> "タイトル"
-        ))
-        @{
-        var optionSeq: Seq[(String, String)] = Seq(("0", ""))
-        memoList.foreach(memo => (optionSeq :+= (memo.id.get.toString, memo.title)))
-
-        select(
-            memoForm("db.parentId"),
-            options = optionSeq,
-            '_label -> "親メモ"
-        )
-        }
-        @(inputDate(
-            memoForm("db.createDate"),
-            '_label -> "日付",
-            'readonly -> true
-        ))
-        @input(
-            memoForm("db.content"),
-            '_label -> "本文"
-        ) {(id, name, value, args)  =>
-            <textarea id="@id" name="@name" cols="100" rows="5" @toHtmlArgs(args)>@value</textarea>
-        }
-        <p><span id="inputLength">0</span>文字</p>
-        @* CREATE時のみ日毎の作成数、経過時間表示 *@
-        @if(memoForm("command").value.getOrElse("")=="C"){
-            <p>本日@{count.getOrElse(0)+1}つめのメモです。</p>
-            <p><span id="elapsedTime"></span>秒経過</p>
-        }
-
-        <input type="submit" value="登録"></input>
+    @* CREATE時のみ日毎の作成数、経過時間表示 *@
+    @if(memoForm("command").value.getOrElse("")=="C"){
+    <small>本日@{count.getOrElse(0)+1}つめのメモです。</small>
+    <small><span id="elapsedTime">0</span>秒経過</small>
     }
-    </div>
+</div>
+<div>
+@form(action=routes.EditThoughtMemoController.register()){
+    <input type="hidden" name="command" value="@memoForm("command").value">
+    <input type="hidden" name="db.id" value="@memoForm("db.id").value">
+    <table>
+        <tr valign="top">
+            <td>
+                @(inputText(
+                    memoForm("db.title"),
+                    '_label -> "タイトル",
+                    '_help -> " ",
+                    'size -> 30,
+                    'class ->"form-control input-sm"
+                ))
+            </td>
+            <td>
+                @{
+                    var optionSeq: Seq[(String, String)] = Seq(("0", ""))
+                    memoList.foreach(memo => (optionSeq :+= (memo.id.get.toString, memo.title)))
+                    select(
+                        memoForm("db.parentId"),
+                        options = optionSeq,
+                        '_label -> "親メモ",
+                        '_help -> " ",
+                        '_showInfos -> false,
+                        'class ->"form-control input-sm"
+                    )
+                }
+            </td>
+            <td>
+                @(inputDate(
+                    memoForm("db.createDate"),
+                    '_label -> "日付",
+                    '_showInfos -> false,
+                    '_help -> " ",
+                    'readOnly -> true,
+                    'class -> "form-control input-sm"
+                ))
+            </td>
+        </tr>
+        <tr>
+            <td colspan="3">
+                @input(
+                    memoForm("db.content"),
+                    '_label -> "本文",
+                    '_showInfos -> false,
+                    '_help -> ""
+                ) {(id, name, value, args)  =>
+                    <textarea class="form-control input-sm" id="@id" name="@name" cols="100" rows="5" @toHtmlArgs(args)>@value</textarea>
+                }
+                <p><span id="inputLength">0</span>文字</p>
+
+            </td>
+        </tr>
+    </table>
+    <input type="submit" class="btn btn-default btn-sm" value="登録"></input>
+}
+</div>
 }
