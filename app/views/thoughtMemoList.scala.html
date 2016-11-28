@@ -34,93 +34,53 @@
                     }
 
                     $('#searchResult').html(htmlStr);
+                    $('#resultCount').html(resArr.length + "件");
                 }
             });
         });
     });
 </script>
-<div>
-    <div>検索条件</div>
-    <table>
-        <tr>
-            <td colspan="2">
-                <label for="conditionTitle">タイトル</label>
-                <input id="conditionTitle" type="text">
-            </td>
-            <td>
-                <label for="conditionContent">本文</label>
-                <input id="conditionContent" type="text">
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <label for="conditionDateFrom">日付</label>
-                <input id="conditionDateFrom" type="date">
-            </td>
-            <td>
-                〜
-            </td>
-            <td>
-                <label for="conditionDateTo"></label>
-                <input id="conditionDateTo" type="date">
-            </td>
-        </tr>
-    </table>
-    <button id="submitCondition">検索</button>
-@**
-    @form(action=routes.ApplicationController.search){
-    <table>
-        <tr>
-            <td>
-                @(inputDate(
-                    msForm("conditionDateFrom"),
-                    '_label -> "日付"
-                ))
-            </td>
-            <td>
-                〜
-            </td>
-            <td>
-                @(inputDate(
-                    msForm("conditionDateTo"),
-                    '_label -> ""
-                ))
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2">
-                @(inputText(
-                    msForm("conditionTitle"),
-                    '_label -> "タイトル"
-                ))
-            </td>
-            <td>
-                @(inputText(
-                    msForm("conditionContent"),
-                    '_label -> "本文"
-                ))
-            </td>
-        </tr>
-
-
-    </table>
-        <input type="submit" value="検索"></input>
-    }
-**@
+<div class="page-header">
+    <h3>メモ一覧</h3><small><a href="@routes.EditThoughtMemoController.displayEdit(0)">新規作成</a></small>
 </div>
-<div>
-    <div>検索結果</div>
-    <table id="searchResult">
-@**
-        <ul>
-            @for(memo <- memos){
-            <li>
-                <a href="@routes.EditThoughtMemoController.displayEdit(memo.id.getOrElse(0))">@memo.title / @memo.content / @memo.createDate</a>
-            </li>
-            }
-        </ul>
-**@
-    </table>
-    <a href="@routes.EditThoughtMemoController.displayEdit(0)">新規作成</a>
+<div class="panel panel-default">
+    <div class="panel-heading"><a data-toggle="collapse" href="#result-collapse">検索条件</a></div>
+    <div class="panel-body panel-collapse collapse in" id="result-collapse">
+        <table>
+            <tr>
+                <td>
+                    <label for="conditionTitle">タイトル</label>
+                    <input id="conditionTitle" type="text" class="form-control input-sm">
+                </td>
+                <td></td>
+                <td>
+                    <label for="conditionContent">本文</label>
+                    <input id="conditionContent" type="text" class="form-control input-sm">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="conditionDateFrom">日付</label>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input id="conditionDateFrom" type="date" class="form-control input-sm">
+                </td>
+                <td>
+                    〜
+                </td>
+                <td>
+                    <input id="conditionDateTo" type="date" class="form-control input-sm">
+                </td>
+            </tr>
+        </table>
+        <button id="submitCondition" class="btn btn-default btn-sm">検索</button>
+    </div>
+</div>
+<div class="panel panel-default">
+    <div class="panel-heading">検索結果 <span class="badge" id="resultCount"></span></div>
+
+    <table id="searchResult" class="table table-striped table-hover table-sm table-responsible"></table>
 </div>
 }
