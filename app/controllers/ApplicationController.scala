@@ -51,35 +51,14 @@ class ApplicationController @Inject() (
     Ok(jsonMemos)
   }
 
-/*
-  def search = Action.async { implicit request =>
-    MemoSearchForms.memoSearchForm.bindFromRequest.fold(
-      formWithErrors => {
-        Future(BadRequest(views.html.thoughtMemoList(
-          null, formWithErrors
-        )))
-      },
-      formValue => {
-        dao.findMemos(
-          formValue.conditionDateFrom,
-          formValue.conditionDateTo,
-          formValue.conditionTitle,
-          formValue.conditionContent
-        ).flatMap(memos =>
-          Future.successful(Ok(views.html.thoughtMemoList(
-            memos,
-            MemoSearchForms.memoSearchForm.fill(
-              MemoSearchForm(
-                formValue.conditionDateFrom,
-                formValue.conditionDateTo,
-                formValue.conditionTitle,
-                formValue.conditionContent
-              )
-            ))))
-        )
-      }
-    )
-  }
-*/
 
+  def deleteMemo = Action { implicit request =>
+    Logger.debug(request.body.asFormUrlEncoded.get.toString)
+
+    val id = request.body.asFormUrlEncoded.get.get("id").get.head
+    val num = Await.result(
+      dao.delete(id.toLong),
+      Duration.Inf)
+    Ok(request.body.asJson.orNull)
+  }
 }
