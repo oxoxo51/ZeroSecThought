@@ -23,22 +23,42 @@
                 type: 'POST',
                 data: jsondata,
                 complete: function(result){
-                    var htmlStr = "<tr><th>タイトル</th><th>内容</th><th>作成日</th></tr>";
+                    var htmlStr = "<tr><th>削除</th><th>タイトル</th><th>内容</th><th>作成日</th></tr>";
                     var resArr = result.responseJSON;
                     for (var i = 0; i < resArr.length; i++) {
                         htmlStr +=
                             "<tr><td>"
+                            + "<button class='memoRow' id='" + resArr[i].id + "'>×</button></td><td>"
                             + "<a href='/edit/" + resArr[i].id + "'>" + resArr[i].title + "</a></td><td>"
                             + resArr[i].content + "</td><td>"
                             + resArr[i].createDate + "</td></tr>";
                     }
 
                     $('#searchResult').html(htmlStr);
-                    $('#resultCount').html(resArr.length + "件");
+                    $('#resultCount').html("<span id='resArrCount'>" + resArr.length + "</span><span>件</span>");
                 }
             });
         });
+
     });
+    $(document).on('click', '.memoRow', (function(){
+        var jsondata = {
+            "id": this.id
+        };
+        var node = this;
+        $.ajax({
+            url: "@routes.ApplicationController.deleteMemo",
+            type: 'POST',
+            data: jsondata,
+            success: function(result){
+                // 行削除
+                $(node).parents("tr").remove();
+                var count = Number($('#resArrCount').text()) - 1;
+
+                $('#resArrCount').html(count);
+            }
+        });
+    }));
 </script>
 <div class="page-header">
     <h3>メモ一覧</h3><small><a href="@routes.EditThoughtMemoController.displayEdit(0)">新規作成</a></small>
