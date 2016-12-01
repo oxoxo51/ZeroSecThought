@@ -7,6 +7,19 @@
 @import scala.concurrent.duration.Duration
 
 @main("メモ作成・編集画面"){
+<div class="page-header">
+    @if(memoForm("command").value.getOrElse("")=="C") {
+    <h3>メモ作成</h3>
+    }else{
+    <h3>メモ編集</h3>
+    }
+    @* CREATE時のみ日毎の作成数、経過時間表示 *@
+    @if(memoForm("command").value.getOrElse("")=="C"){
+    <small>本日@{count.getOrElse(0)+1}つめのメモです。</small>
+    <small><span id="elapsedTime">0</span>秒経過</small>
+    }
+</div>
+}{
 <script type="text/javascript">
 	$(function(){
 	    // 初期表示時点の文字数
@@ -24,18 +37,6 @@
 	    },1000);
 	});
 </script>
-<div class="page-header">
-    @if(memoForm("command").value.getOrElse("")=="C") {
-        <h3>メモ作成</h3>
-    }else{
-        <h3>メモ編集</h3>
-    }
-    @* CREATE時のみ日毎の作成数、経過時間表示 *@
-    @if(memoForm("command").value.getOrElse("")=="C"){
-    <small>本日@{count.getOrElse(0)+1}つめのメモです。</small>
-    <small><span id="elapsedTime">0</span>秒経過</small>
-    }
-</div>
 <div>
 @form(action=routes.EditThoughtMemoController.register()){
     <input type="hidden" name="command" value="@memoForm("command").value">
