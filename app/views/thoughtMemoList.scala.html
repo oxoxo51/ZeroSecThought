@@ -5,6 +5,10 @@
 @import helper._
 
 @main("メモ一覧"){
+<div class="page-header">
+    <h3>メモ一覧</h3><small><a href="@routes.EditThoughtMemoController.displayEdit(0)">新規作成</a></small>
+</div>
+}{
 <script type="text/javascript">
     $(function(){
         $('#submitCondition').click(function(){
@@ -26,11 +30,22 @@
                     var htmlStr = "<tr><th>削除</th><th>タイトル</th><th>内容</th><th>作成日</th></tr>";
                     var resArr = result.responseJSON;
                     for (var i = 0; i < resArr.length; i++) {
+                        var titleRegExp = new RegExp(conditionTitle, "g");
+                        var contentRegExp = new RegExp(conditionContent, "g");
+                        var title = resArr[i].title;
+                        if (conditionTitle !== "") {
+                            title = title.replace(titleRegExp, '<mark>' + conditionTitle + '</mark>');
+                        }
+                        var content = resArr[i].content
+                        if (conditionContent !== "") {
+                            content = content.replace(/\r\n/g,'<br>')
+                                .replace(contentRegExp, '<mark>' + conditionContent + '</mark>');
+                        }
                         htmlStr +=
                             "<tr><td>"
                             + "<button class='memoRow' id='" + resArr[i].id + "'>×</button></td><td>"
-                            + "<a href='/edit/" + resArr[i].id + "'>" + resArr[i].title + "</a></td><td>"
-                            + resArr[i].content + "</td><td>"
+                            + "<a href='/edit/" + resArr[i].id + "'>" + title + "</a></td><td>"
+                            + content + "</td><td>"
                             + resArr[i].createDate + "</td></tr>";
                     }
 
@@ -60,9 +75,6 @@
         });
     }));
 </script>
-<div class="page-header">
-    <h3>メモ一覧</h3><small><a href="@routes.EditThoughtMemoController.displayEdit(0)">新規作成</a></small>
-</div>
 <div class="panel panel-default">
     <div class="panel-heading"><a data-toggle="collapse" href="#result-collapse">検索条件</a></div>
     <div class="panel-body panel-collapse collapse in" id="result-collapse">
