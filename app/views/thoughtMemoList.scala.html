@@ -26,11 +26,12 @@
                     var htmlStr = "<tr><th>削除</th><th>タイトル</th><th>内容</th><th>作成日</th></tr>";
                     var resArr = result.responseJSON;
                     for (var i = 0; i < resArr.length; i++) {
+                        var content = resArr[i].content.replace(/\r\n/g,'<br>');
                         htmlStr +=
                             "<tr><td>"
                             + "<button class='memoRow' id='" + resArr[i].id + "'>×</button></td><td>"
                             + "<a href='/edit/" + resArr[i].id + "'>" + resArr[i].title + "</a></td><td>"
-                            + resArr[i].content + "</td><td>"
+                            + content + "</td><td>"
                             + resArr[i].createDate + "</td></tr>";
                     }
 
