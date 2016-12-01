@@ -36,10 +36,9 @@
                         if (conditionTitle !== "") {
                             title = title.replace(titleRegExp, '<mark>' + conditionTitle + '</mark>');
                         }
-                        var content = resArr[i].content
+                        var content = resArr[i].content.replace(/\r\n/g,'<br>');
                         if (conditionContent !== "") {
-                            content = content.replace(/\r\n/g,'<br>')
-                                .replace(contentRegExp, '<mark>' + conditionContent + '</mark>');
+                            content = content.replace(contentRegExp, '<mark>' + conditionContent + '</mark>');
                         }
                         htmlStr +=
                             "<tr><td>"
