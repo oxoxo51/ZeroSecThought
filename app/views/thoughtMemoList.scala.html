@@ -29,9 +29,9 @@
                 complete: function(result){
                     var htmlStr = "<tr><th>削除</th><th>タイトル</th><th>内容</th><th>作成日</th></tr>";
                     var resArr = result.responseJSON;
+                    var titleRegExp = new RegExp(conditionTitle, "g");
+                    var contentRegExp = new RegExp(conditionContent, "g");
                     for (var i = 0; i < resArr.length; i++) {
-                        var titleRegExp = new RegExp(conditionTitle, "g");
-                        var contentRegExp = new RegExp(conditionContent, "g");
                         var title = resArr[i].title;
                         if (conditionTitle !== "") {
                             title = title.replace(titleRegExp, '<mark>' + conditionTitle + '</mark>');
@@ -47,13 +47,28 @@
                             + content + "</td><td>"
                             + resArr[i].createDate + "</td></tr>";
                     }
-
                     $('#searchResult').html(htmlStr);
                     $('#resultCount').html("<span id='resArrCount'>" + resArr.length + "</span><span>件</span>");
                 }
             });
         });
-
+        $('#clearCondition').click(function(){
+            $('#conditionTitle').val("");
+            $('#conditionContent').val("");
+            $('#conditionDateFrom').val("");
+            $('#conditionDateTo').val("");
+        });
+        $('#setToday').click(function(){
+            var today = new Date();
+            var dd = today.getDate();
+            var mm = today.getMonth() + 1;
+            var yyyy = today.getFullYear();
+            if (dd < 10) {dd = '0' + dd}
+            if (mm < 10) {mm = '0' + mm}
+            today = yyyy + '-' + mm + '-' + dd;
+            $('#conditionDateFrom').val(today);
+            $('#conditionDateTo').val(today);
+        });
     });
     $(document).on('click', '.memoRow', (function(){
         var jsondata = {
@@ -91,7 +106,7 @@
             </tr>
             <tr>
                 <td>
-                    <label for="conditionDateFrom">日付</label>
+                    <label for="conditionDateFrom">日付</label><button class="button button-xs" id="setToday">今日</button>
                 </td>
             </tr>
             <tr>
@@ -107,6 +122,7 @@
             </tr>
         </table>
         <button id="submitCondition" class="btn btn-default btn-sm">検索</button>
+        <button id="clearCondition" class="btn btn-default btn-sm">クリア</button>
     </div>
 </div>
 <div class="panel panel-default">
