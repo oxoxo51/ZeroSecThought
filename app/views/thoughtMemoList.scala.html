@@ -11,6 +11,7 @@
 }{
 <script type="text/javascript">
     $(function(){
+
         $('#submitCondition').click(function(){
             var conditionTitle = $('#conditionTitle').val();
             var conditionContent = $('#conditionContent').val();
@@ -27,7 +28,7 @@
                 type: 'POST',
                 data: jsondata,
                 complete: function(result){
-                    var htmlStr = "<tr><th>削除</th><th>タイトル</th><th>内容</th><th>作成日</th></tr>";
+                    var htmlStr = "<thead><tr><th>削除</th><th>タイトル</th><th>内容</th><th>作成日</th></tr></thead><tbody id='itemContainer'>";
                     var resArr = result.responseJSON;
                     var titleRegExp = new RegExp(conditionTitle, "g");
                     var contentRegExp = new RegExp(conditionContent, "g");
@@ -47,10 +48,23 @@
                             + content + "</td><td>"
                             + resArr[i].createDate + "</td></tr>";
                     }
+                    htmlStr += "</tbody>";
                     $('#searchResult').html(htmlStr);
                     $('#resultCount').html("<span id='resArrCount'>" + resArr.length + "</span><span>件</span>");
+                    // ページネーションの設定
+                    $("span.holder").jPages({
+                        containerID  : "itemContainer",
+                        previous     : "＜",
+                        next         : "＞",
+                        perPage      : 10,
+                        startPage    : 1,
+                        startRange   : 1,
+                        midRange     : 5,
+                        endRange     : 1
+                    });
                 }
             });
+
         });
         $('#clearCondition').click(function(){
             $('#conditionTitle').val("");
@@ -106,7 +120,7 @@
             </tr>
             <tr>
                 <td>
-                    <label for="conditionDateFrom">日付</label><button class="button button-xs" id="setToday">今日</button>
+                    <label for="conditionDateFrom">日付</label><button class="btn btn-link btn-xs" id="setToday">今日</button>
                 </td>
             </tr>
             <tr>
@@ -126,7 +140,7 @@
     </div>
 </div>
 <div class="panel panel-default">
-    <div class="panel-heading">検索結果 <span class="badge" id="resultCount"></span></div>
+    <div class="panel-heading">検索結果 <span class="badge" id="resultCount"></span><span class='holder'></span></div>
 
     <table id="searchResult" class="table table-striped table-hover table-sm table-responsible"></table>
 </div>
