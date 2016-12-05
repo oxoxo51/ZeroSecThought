@@ -1,7 +1,7 @@
 @*
  * メモ一覧画面.
 *@
-@()(implicit request: RequestHeader, messages: Messages, webJarAssets: WebJarAssets)
+@(iniConTitle: Option[String], iniConContent: Option[String], iniConDateFrom: Option[java.sql.Date], iniConDateTo: Option[java.sql.Date])(implicit request: RequestHeader, messages: Messages, webJarAssets: WebJarAssets)
 @import helper._
 
 @main("メモ一覧"){
@@ -11,60 +11,8 @@
 }{
 <script type="text/javascript">
     $(function(){
-
         $('#submitCondition').click(function(){
-            var conditionTitle = $('#conditionTitle').val();
-            var conditionContent = $('#conditionContent').val();
-            var conditionDateFrom = $('#conditionDateFrom').val();
-            var conditionDateTo = $('#conditionDateTo').val();
-            var jsondata = {
-                "conditionTitle": conditionTitle,
-                "conditionContent": conditionContent,
-                "conditionDateFrom": conditionDateFrom,
-                "conditionDateTo": conditionDateTo
-            };
-            $.ajax({
-                url: "@routes.ApplicationController.searchMemo",
-                type: 'POST',
-                data: jsondata,
-                complete: function(result){
-                    var htmlStr = "<thead><tr><th>削除</th><th>タイトル</th><th>内容</th><th>作成日</th></tr></thead><tbody id='itemContainer'>";
-                    var resArr = result.responseJSON;
-                    var titleRegExp = new RegExp(conditionTitle, "g");
-                    var contentRegExp = new RegExp(conditionContent, "g");
-                    for (var i = 0; i < resArr.length; i++) {
-                        var title = resArr[i].title;
-                        if (conditionTitle !== "") {
-                            title = title.replace(titleRegExp, '<mark>' + conditionTitle + '</mark>');
-                        }
-                        var content = resArr[i].content.replace(/\r\n/g,'<br>');
-                        if (conditionContent !== "") {
-                            content = content.replace(contentRegExp, '<mark>' + conditionContent + '</mark>');
-                        }
-                        htmlStr +=
-                            "<tr><td>"
-                            + "<button class='memoRow' id='" + resArr[i].id + "'>×</button></td><td>"
-                            + "<a href='/edit/" + resArr[i].id + "'>" + title + "</a></td><td>"
-                            + content + "</td><td>"
-                            + resArr[i].createDate + "</td></tr>";
-                    }
-                    htmlStr += "</tbody>";
-                    $('#searchResult').html(htmlStr);
-                    $('#resultCount').html("<span id='resArrCount'>" + resArr.length + "</span><span>件</span>");
-                    // ページネーションの設定
-                    $("span.holder").jPages({
-                        containerID  : "itemContainer",
-                        previous     : "＜",
-                        next         : "＞",
-                        perPage      : 10,
-                        startPage    : 1,
-                        startRange   : 1,
-                        midRange     : 5,
-                        endRange     : 1
-                    });
-                }
-            });
-
+            search();
         });
         $('#clearCondition').click(function(){
             $('#conditionTitle').val("");
@@ -83,6 +31,7 @@
             $('#conditionDateFrom').val(today);
             $('#conditionDateTo').val(today);
         });
+        search();
     });
     $(document).on('click', '.memoRow', (function(){
         var jsondata = {
@@ -102,6 +51,59 @@
             }
         });
     }));
+    function search() {
+        var conditionTitle = $('#conditionTitle').val();
+        var conditionContent = $('#conditionContent').val();
+        var conditionDateFrom = $('#conditionDateFrom').val();
+        var conditionDateTo = $('#conditionDateTo').val();
+        var jsondata = {
+            "conditionTitle": conditionTitle,
+            "conditionContent": conditionContent,
+            "conditionDateFrom": conditionDateFrom,
+            "conditionDateTo": conditionDateTo
+        };
+        $.ajax({
+            url: "@routes.ApplicationController.searchMemo",
+            type: 'POST',
+            data: jsondata,
+            complete: function(result){
+                var htmlStr = "<thead><tr><th>削除</th><th>タイトル</th><th>内容</th><th>作成日</th></tr></thead><tbody id='itemContainer'>";
+                var resArr = result.responseJSON;
+                var titleRegExp = new RegExp(conditionTitle, "g");
+                var contentRegExp = new RegExp(conditionContent, "g");
+                for (var i = 0; i < resArr.length; i++) {
+                    var title = resArr[i].title;
+                    if (conditionTitle !== "") {
+                        title = title.replace(titleRegExp, '<mark>' + conditionTitle + '</mark>');
+                    }
+                    var content = resArr[i].content.replace(/\r\n/g,'<br>');
+                    if (conditionContent !== "") {
+                        content = content.replace(contentRegExp, '<mark>' + conditionContent + '</mark>');
+                    }
+                    htmlStr +=
+                        "<tr><td>"
+                        + "<button class='memoRow' id='" + resArr[i].id + "'>×</button></td><td>"
+                        + "<a href='/edit/" + resArr[i].id + "'>" + title + "</a></td><td>"
+                        + content + "</td><td>"
+                        + resArr[i].createDate + "</td></tr>";
+                }
+                htmlStr += "</tbody>";
+                $('#searchResult').html(htmlStr);
+                $('#resultCount').html("<span id='resArrCount'>" + resArr.length + "</span><span>件</span>");
+                // ページネーションの設定
+                $("span.holder").jPages({
+                    containerID  : "itemContainer",
+                    previous     : "＜",
+                    next         : "＞",
+                    perPage      : 10,
+                    startPage    : 1,
+                    startRange   : 1,
+                    midRange     : 5,
+                    endRange     : 1
+                });
+            }
+        });
+    }
 </script>
 <div class="panel panel-default">
     <div class="panel-heading"><a data-toggle="collapse" href="#result-collapse">検索条件</a></div>
@@ -110,12 +112,14 @@
             <tr>
                 <td>
                     <label for="conditionTitle">タイトル</label>
-                    <input id="conditionTitle" type="text" class="form-control input-sm">
+                    <input id="conditionTitle" type="text" class="form-control input-sm"
+                           value="@iniConTitle.getOrElse("")">
                 </td>
                 <td></td>
                 <td>
                     <label for="conditionContent">本文</label>
-                    <input id="conditionContent" type="text" class="form-control input-sm">
+                    <input id="conditionContent" type="text" class="form-control input-sm"
+                           value="@iniConContent.getOrElse("")">
                 </td>
             </tr>
             <tr>
@@ -125,13 +129,15 @@
             </tr>
             <tr>
                 <td>
-                    <input id="conditionDateFrom" type="date" class="form-control input-sm">
+                    <input id="conditionDateFrom" type="date" class="form-control input-sm"
+                           value="@iniConDateFrom.getOrElse("")">
                 </td>
                 <td>
                     〜
                 </td>
                 <td>
-                    <input id="conditionDateTo" type="date" class="form-control input-sm">
+                    <input id="conditionDateTo" type="date" class="form-control input-sm"
+                           value="@iniConDateTo.getOrElse("")">
                 </td>
             </tr>
         </table>
