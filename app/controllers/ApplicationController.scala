@@ -21,7 +21,31 @@ class ApplicationController @Inject() (
 
   def index = Action.async { implicit request =>
     Logger.debug("***** access index *****")
-    Future.successful(Ok(views.html.thoughtMemoList()))
+    // セッションから検索条件取得
+    val conditionTitle = request.session.get("conditionTitle")
+    val conditionContent = request.session.get("conditionContent")
+    val conditionDateFrom = request.session.get("conditionDateFrom") match {
+      case None => None
+      case Some(s) => s match {
+        case "" => None
+        case _  => Some(java.sql.Date.valueOf(s))
+    }
+
+    }
+    val conditionDateTo = request.session.get("conditionDateTo") match {
+      case None => None
+      case Some(s) =>  s match {
+        case "" => None
+        case _  => Some(java.sql.Date.valueOf(s))
+      }
+    }
+    Logger.debug("session:" + conditionTitle + "/" + conditionContent + "/" + conditionDateFrom + "/" + conditionDateTo)
+    Future.successful(Ok(views.html.thoughtMemoList(
+      conditionTitle,
+      conditionContent,
+      conditionDateFrom,
+      conditionDateTo
+    )))
   }
 
   def searchMemo = Action { implicit request =>
@@ -48,7 +72,12 @@ class ApplicationController @Inject() (
       Duration.Inf)
     val jsonMemos = Json.toJson(memos)
     Logger.debug(jsonMemos.toString)
-    Ok(jsonMemos)
+    Ok(jsonMemos).withSession(
+      "conditionTitle" -> conditionTitle.getOrElse("").toString,
+      "conditionContent" -> conditionContent.getOrElse("").toString,
+      "conditionDateFrom" -> conditionDateFrom.getOrElse("").toString,
+      "conditionDateTo" -> conditionDateTo.getOrElse("").toString
+    )
   }
 
 
