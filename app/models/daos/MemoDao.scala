@@ -40,7 +40,7 @@ class MemoDao @Inject()(dbConfigProvider: DatabaseConfigProvider) {
     * @return
     */
   def getMemos(): Future[List[Memo]] =
-    dbConfig.db.run(memos.result).map(_.toList)
+    dbConfig.db.run(memos.sortBy(row => row.title).result).map(_.toList)
 
   /**
     * 条件検索.
@@ -60,7 +60,7 @@ class MemoDao @Inject()(dbConfigProvider: DatabaseConfigProvider) {
       && (row.createDate <= conditionDateTo.getOrElse(java.sql.Date.valueOf("9999-12-31")))
       && (row.title like s"%${conditionTitle.getOrElse("")}%")
       && (row.content like s"%${conditionContent.getOrElse("")}%")
-    ).result).map(_.toList)
+    ).sortBy(row => row.title).result).map(_.toList)
   }
 
   /**
