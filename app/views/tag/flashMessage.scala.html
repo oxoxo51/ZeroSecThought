@@ -1,14 +1,20 @@
 @()(implicit request: RequestHeader, messages: Messages, webJarAssets: WebJarAssets)
 @import constant.Constant
 
+<script type="text/javascript">
+/* bootstrap alertをx秒後に消す */
+$(function() {
+    $('.alert').delay(3000).fadeOut(500);
+});
+</script>
 @request.flash.get(Constant.MSG_SUCCESS).map {message =>
-<div class="col-xs-12 success alert alert-success alert-dismissable">
+<div class="alert alert-success alert-dismissable">
     <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
     <strong>@message</strong>
 </div>
 }
 @request.flash.get(Constant.MSG_ERROR).map {message =>
-<div class="col-xs-12 success alert alert-danger alert-dismissable">
+<div class="alert alert-danger alert-dismissable">
     <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
     <strong>@message</strong>
 </div>
