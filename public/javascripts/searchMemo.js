@@ -21,24 +21,7 @@ $(function(){
     });
     search();
 });
-$(document).on('click', '.memoRow', (function(){
-    var jsondata = {
-        "id": this.id
-    };
-    var node = this;
-    $.ajax({
-        url: "/delete",
-        type: 'POST',
-        data: jsondata,
-        success: function(result){
-            // 行削除
-            $(node).parents("tr").remove();
-            var count = Number($('#resArrCount').text()) - 1;
 
-            $('#resArrCount').html(count);
-        }
-    });
-}));
 /**
  * 検索.
  *
@@ -182,8 +165,38 @@ function createHtmlLine(resArrLine, conditionTitle, conditionContent) {
     // 1行分のHtmlを作成して返却
     return (
         "<tr><td>"
-        + "<button class='memoRow' id='" + resArrLine.id + "'>×</button></td><td>"
+        + "<button type='button' class='memoRow btn btn-default btn-sm' id='" + resArrLine.id + "' data-toggle='modal' data-target='#modalFade' data-name='" + title + "'>×</button></td><td>"
         + "<a href='/edit/" + resArrLine.id + "'>" + title + "</a></td><td>"
         + content + "</td><td>"
         + resArrLine.createDate + "</td></tr>");
 }
+
+
+$(document).on('show.bs.modal', '#modalFade', function(){
+    var button = $(event.target);
+    var msg = "「" + button.data('name') + "」を削除します。";
+    var modal = $(this);
+    var delId = button.attr('id');
+    modal.find('#delMsg').addClass(delId);
+    modal.find('#delMsg').text(msg);
+    modal.find('#delOk').focus();
+});
+$(document).on('click', '#delOk', function(){
+    var id = $('#delMsg').attr('class')
+    var jsondata = {
+        "id": id
+    };
+    var node = this;
+    $.ajax({
+        url: "/delete",
+        type: 'POST',
+        data: jsondata,
+        success: function(result){
+            // 行削除
+            $('button#' + id).parents("tr").remove();
+            var count = Number($('#resArrCount').text()) - 1;
+
+            $('#resArrCount').html(count);
+        }
+    });
+});

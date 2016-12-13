@@ -51,6 +51,19 @@
     </div>
 </div>
 <div class="panel panel-default">
+    <!-- modal dialog -->
+    <div class="modal fade" id="modalFade" tabindex="-1">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <!-- 削除確認メッセージ -->
+                    <p id="delMsg"></p>
+                    <button id="delOk" data-dismiss="modal">OK</button>
+                    <button id="delCancel" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="panel-heading">検索結果 <span class="badge" id="resultCount"></span><span class='holder'></span></div>
 
     <table id="searchResult" class="table table-striped table-hover table-sm table-responsible"></table>
