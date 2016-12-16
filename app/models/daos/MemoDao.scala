@@ -64,13 +64,13 @@ class MemoDao @Inject()(dbConfigProvider: DatabaseConfigProvider) {
   }
 
   /**
-    * 当日のメモ件数取得.
-    * @param today
+    * 指定された日付のメモ件数取得.
+    * @param date
     * @return
     */
-  def getCount(today: Date): Int =
+  def getCount(date: Date): Int =
     Await.result(
-      dbConfig.db.run(memos.filter(_.createDate === today).length.result),
+      dbConfig.db.run(memos.filter(_.createDate === date).length.result),
       Duration.Inf
     )
 
