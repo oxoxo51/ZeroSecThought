@@ -167,7 +167,7 @@ function createHtmlLine(resArrLine, conditionTitle, conditionContent) {
         "<tr><td>"
         + "<button type='button' class='memoRow btn btn-default btn-sm' id='" + resArrLine.id + "' data-toggle='modal' data-target='#modalFade' data-name='" + title + "'>×</button></td><td>"
         + "<a href='/edit/" + resArrLine.id + "'>" + title + "</a></td><td>"
-        + content + "</td><td>"
+        + content + "</td><td class='memo_date'>"
         + resArrLine.createDate + "</td></tr>");
 }
 
@@ -177,6 +177,7 @@ $(document).on('show.bs.modal', '#modalFade', function(){
     var msg = "「" + button.data('name') + "」を削除します。";
     var modal = $(this);
     var delId = button.attr('id');
+    modal.find('#delMsg').removeClass();
     modal.find('#delMsg').addClass(delId);
     modal.find('#delMsg').text(msg);
     modal.find('#delOk').focus();
@@ -192,11 +193,23 @@ $(document).on('click', '#delOk', function(){
         type: 'POST',
         data: jsondata,
         success: function(result){
+            // 削除するメモの日付を取得
+            var memoDate = $('button#' + id).parents('td').nextAll('td.memo_date').text();
+            var dateCount = Number($('#cnt_' + memoDate.replace(/\//g, "\\/")).text()) - 1;
+            $('#cnt_' + memoDate.replace(/\//g, "\\/")).html(dateCount);
             // 行削除
             $('button#' + id).parents("tr").remove();
-            var count = Number($('#resArrCount').text()) - 1;
+            var resultCount = Number($('#resArrCount').text()) - 1;
 
-            $('#resArrCount').html(count);
+            $('#resArrCount').html(resultCount);
         }
     });
+});
+
+
+$(document).on('click', '.weekCnt', function(){
+    var date = $(this).text().replace(/\//g, '-');
+    $('#conditionDateFrom').val(date);
+    $('#conditionDateTo').val(date);
+    search();
 });
