@@ -44,6 +44,8 @@ class ApplicationController @Inject() (
         case _  => Some(java.sql.Date.valueOf(s))
       }
     }
+
+    val sdf = new SimpleDateFormat("yyyy/MM/dd")
     var weekMemoList = List.empty[(String, String)]
     // 1週間分ループを回し、日付＋日付のmem0件数を取得しListに詰める
     for (i <- 0 to 6) {
@@ -51,10 +53,18 @@ class ApplicationController @Inject() (
       cal.setTime(utilToday)
       cal.add(Calendar.DAY_OF_MONTH, i-6)
       val count = dao.getCount(new java.sql.Date(cal.getTime.getTime))
-      val sdf = new SimpleDateFormat("yyyy/MM/dd")
       weekMemoList :+= (sdf.format(cal.getTime), Integer.toString(count))
     }
-    Logger.debug(weekMemoList.toString)
+    var monthYearList = List.empty[(String, String)]
+    val cal = Calendar.getInstance
+    cal.setTime(utilToday)
+    cal.add(Calendar.MONTH, -1)
+    val monthCount = dao.getCount(new java.sql.Date(cal.getTime.getTime))
+    monthYearList :+= (sdf.format(cal.getTime), Integer.toString(monthCount))
+    cal.add(Calendar.MONTH, 1)
+    cal.add(Calendar.YEAR, -1)
+    val yearCount = dao.getCount(new java.sql.Date(cal.getTime.getTime))
+    monthYearList :+= (sdf.format(cal.getTime), Integer.toString(yearCount))
 
     Logger.debug("session:" + conditionTitle + "/" + conditionContent + "/" + conditionDateFrom + "/" + conditionDateTo)
     Future.successful(Ok(views.html.thoughtMemoList(
@@ -62,7 +72,8 @@ class ApplicationController @Inject() (
       conditionContent,
       conditionDateFrom,
       conditionDateTo,
-      weekMemoList
+      weekMemoList,
+      monthYearList
     )))
   }
 
