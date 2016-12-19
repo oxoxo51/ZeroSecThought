@@ -1,5 +1,7 @@
 package controllers
 
+import java.text.SimpleDateFormat
+import java.util.Calendar
 import javax.inject.Inject
 
 import models.daos.MemoDao
@@ -7,6 +9,7 @@ import play.api.Logger
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.libs.json.Json
 import play.api.mvc.{Action, Controller}
+
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Future}
 
@@ -18,6 +21,8 @@ class ApplicationController @Inject() (
   dao: MemoDao,
   implicit val webJarAssets: WebJarAssets)
   extends Controller with I18nSupport {
+
+  val utilToday = new java.util.Date
 
   def index = Action.async { implicit request =>
     Logger.debug("***** access index *****")
@@ -39,12 +44,25 @@ class ApplicationController @Inject() (
         case _  => Some(java.sql.Date.valueOf(s))
       }
     }
+    var weekMemoList = List.empty[(String, String)]
+    // 1週間分ループを回し、日付＋日付のmem0件数を取得しListに詰める
+    for (i <- 0 to 6) {
+      val cal = Calendar.getInstance
+      cal.setTime(utilToday)
+      cal.add(Calendar.DAY_OF_MONTH, i-6)
+      val count = dao.getCount(new java.sql.Date(cal.getTime.getTime))
+      val sdf = new SimpleDateFormat("yyyy/MM/dd")
+      weekMemoList :+= (sdf.format(cal.getTime), Integer.toString(count))
+    }
+    Logger.debug(weekMemoList.toString)
+
     Logger.debug("session:" + conditionTitle + "/" + conditionContent + "/" + conditionDateFrom + "/" + conditionDateTo)
     Future.successful(Ok(views.html.thoughtMemoList(
       conditionTitle,
       conditionContent,
       conditionDateFrom,
-      conditionDateTo
+      conditionDateTo,
+      weekMemoList
     )))
   }
 

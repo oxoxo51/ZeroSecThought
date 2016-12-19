@@ -1,7 +1,7 @@
 @*
  * メモ一覧画面.
 *@
-@(iniConTitle: Option[String], iniConContent: Option[String], iniConDateFrom: Option[java.sql.Date], iniConDateTo: Option[java.sql.Date])(implicit request: RequestHeader, messages: Messages, webJarAssets: WebJarAssets)
+@(iniConTitle: Option[String], iniConContent: Option[String], iniConDateFrom: Option[java.sql.Date], iniConDateTo: Option[java.sql.Date], weekMemoList: List[(String, String)])(implicit request: RequestHeader, messages: Messages, webJarAssets: WebJarAssets)
 @import helper._
 
 @main("メモ一覧"){
@@ -14,7 +14,14 @@
     <div class="panel panel-default">
         <div class="panel-heading"><a data-toggle="collapse" data-parent="#menuPanel" href="#lastWeekPanel">過去1週間</a></div>
         <div class="panel-body panel-collapse collapse in" id="lastWeekPanel">
-
+            @* 今日含めた過去1週間分のメモ件数を取得しHTMLに表示する *@
+            @{
+                var weekStr = ""
+                weekMemoList.foreach{ case (i, j) =>
+                    weekStr += ("<li><a class='weekCnt'>" + i + "</a><span class='badge'><span id='cnt_" + i + "'>" + j + "</span>件</span></li>")
+                }
+                Html(weekStr)
+            }
         </div>
     </div>
     <div class="panel panel-default">
