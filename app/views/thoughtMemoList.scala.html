@@ -18,7 +18,7 @@
             @{
                 var weekStr = ""
                 weekMemoList.foreach{ case (i, j) =>
-                    weekStr += ("<li><a class='weekCnt'>" + i + "</a><span class='badge'><span id='cnt_" + i + "'>" + j + "</span>件</span></li>")
+                    weekStr += ("<div class='row'><div class='col-xs-4 col-md-2'><a class='weekCnt'>" + i + "</a></div><div class='col-xs-8 col-md-10'><span class='badge'><span id='cnt_" + i + "'>" + j + "</span>件</span></div></div>")
                 }
                 Html(weekStr)
             }
@@ -31,7 +31,7 @@
             @{
                 var monthYearStr = ""
                 monthYearList.foreach{ case (i, j) =>
-                    monthYearStr += ("<li><a class='weekCnt'>" + i + "</a><span class='badge'><span id='cnt_" + i + "'>" + j + "</span>件</span></li>")
+                    monthYearStr += ("<div class='row'><div class='col-xs-4 col-md-2'><a class='weekCnt'>" + i + "</a></div><div class='col-xs-8 col-md-10'><span class='badge'><span id='cnt_" + i + "'>" + j + "</span>件</span></div></div>")
                 }
                 Html(monthYearStr)
             }
