@@ -207,7 +207,7 @@ $(document).on('click', '#delOk', function(){
 });
 
 
-$(document).on('click', '.weekCnt', function(){
+$(document).on('click', '.memoCnt', function(){
     var date = $(this).text().replace(/\//g, '-');
     $('#conditionDateFrom').val(date);
     $('#conditionDateTo').val(date);
