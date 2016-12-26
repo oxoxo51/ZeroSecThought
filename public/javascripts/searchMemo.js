@@ -174,12 +174,12 @@ function createHtmlLine(resArrLine, conditionTitle, conditionContent) {
 
 $(document).on('show.bs.modal', '#modalFade', function(){
     var button = $(event.target);
-    var msg = "「" + button.data('name') + "」を削除します。";
+    var msg = "「" + button.data('name').replace('<mark>', '').replace('</mark>', '') + "」を削除します。";
     var modal = $(this);
     var delId = button.attr('id');
     modal.find('#delMsg').removeClass();
     modal.find('#delMsg').addClass(delId);
-    modal.find('#delMsg').text(msg);
+    modal.find('#delMsg').html(msg);
     modal.find('#delOk').focus();
 });
 $(document).on('click', '#delOk', function(){
