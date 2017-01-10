@@ -52,13 +52,13 @@
                                 <td>
                                     <label for="conditionTitle">タイトル</label>
                                     <input id="conditionTitle" type="text" class="form-control input-sm"
-                                           value="転職">
+                                           value="@iniConTitle.getOrElse("")">
                                 </td>
                                 <td></td>
                                 <td>
                                     <label for="conditionContent">本文</label>
                                     <input id="conditionContent" type="text" class="form-control input-sm"
-                                           value="">
+                                           value="@iniConContent.getOrElse("")">
                                 </td>
                             </tr>
                             <tr>
@@ -69,14 +69,14 @@
                             <tr>
                                 <td>
                                     <input id="conditionDateFrom" type="date" class="form-control input-sm"
-                                           value="">
+                                           value="@iniConDateFrom.getOrElse("")">
                                 </td>
                                 <td>
                                     〜
                                 </td>
                                 <td>
                                     <input id="conditionDateTo" type="date" class="form-control input-sm"
-                                           value="">
+                                           value="@iniConDateTo.getOrElse("")">
                                 </td>
                             </tr>
                             <tr>
