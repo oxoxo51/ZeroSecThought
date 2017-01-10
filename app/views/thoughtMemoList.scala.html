@@ -47,39 +47,62 @@
             <div class="panel panel-default">
                 <div class="panel-heading">検索条件</div>
                 <div class="panel-body" id="conditionPanel">
-                    <table>
-                        <tr>
-                            <td>
-                                <label for="conditionTitle">タイトル</label>
-                                <input id="conditionTitle" type="text" class="form-control input-sm"
-                                       value="@iniConTitle.getOrElse("")">
-                            </td>
-                            <td></td>
-                            <td>
-                                <label for="conditionContent">本文</label>
-                                <input id="conditionContent" type="text" class="form-control input-sm"
-                                       value="@iniConContent.getOrElse("")">
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <label for="conditionDateFrom">日付</label><button class="btn btn-link btn-xs" id="setToday">今日</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <input id="conditionDateFrom" type="date" class="form-control input-sm"
-                                       value="@iniConDateFrom.getOrElse("")">
-                            </td>
-                            <td>
-                                〜
-                            </td>
-                            <td>
-                                <input id="conditionDateTo" type="date" class="form-control input-sm"
-                                       value="@iniConDateTo.getOrElse("")">
-                            </td>
-                        </tr>
-                    </table>
+                        <table>
+                            <tr>
+                                <td>
+                                    <label for="conditionTitle">タイトル</label>
+                                    <input id="conditionTitle" type="text" class="form-control input-sm"
+                                           value="転職">
+                                </td>
+                                <td></td>
+                                <td>
+                                    <label for="conditionContent">本文</label>
+                                    <input id="conditionContent" type="text" class="form-control input-sm"
+                                           value="">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label for="conditionDateFrom">日付</label><button class="btn btn-link btn-xs" id="setToday">今日</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input id="conditionDateFrom" type="date" class="form-control input-sm"
+                                           value="">
+                                </td>
+                                <td>
+                                    〜
+                                </td>
+                                <td>
+                                    <input id="conditionDateTo" type="date" class="form-control input-sm"
+                                           value="">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2"><label>ソートキー</label></td>
+                                <td><label>ソート順</label></td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <label class="radio-inline">
+                                        <input type="radio" name="sortKey" value="1" checked>タイトル
+                                    </label>
+                                    <label class="radio-inline">
+                                        <input type="radio" name="sortKey" value="2">日付
+                                    </label>
+                                </td>
+                                <td>
+                                    <label class="radio-inline">
+                                        <input type="radio" name="sortOrder" value="1" checked>昇順
+                                    </label>
+                                    <label class="radio-inline">
+                                        <input type="radio" name="sortOrder" value="2">降順
+                                    </label>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
                     <button id="submitCondition" class="btn btn-default btn-sm">検索</button>
                     <button id="clearCondition" class="btn btn-default btn-sm">クリア</button>
                 </div>
