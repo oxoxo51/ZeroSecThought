@@ -20,3 +20,5 @@ server.pid
 /.settings
 /RUNNING_PID
 *.class
+/projectFilesBackup/
+/projectFilesBackup1/
