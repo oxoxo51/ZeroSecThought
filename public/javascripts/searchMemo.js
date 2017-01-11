@@ -7,6 +7,8 @@ $(function(){
         $('#conditionContent').val("");
         $('#conditionDateFrom').val("");
         $('#conditionDateTo').val("");
+        document.getElementsByName('sortKey')[0].checked = true;
+        document.getElementsByName('sortOrder')[0].checked = true;
     });
     $('#setToday').click(function(){
         var today = new Date();
@@ -19,6 +21,7 @@ $(function(){
         $('#conditionDateFrom').val(today);
         $('#conditionDateTo').val(today);
     });
+    setRadioVal();
     search();
 });
 
@@ -34,11 +37,15 @@ function search() {
     var conditionContent = $('#conditionContent').val();
     var conditionDateFrom = $('#conditionDateFrom').val();
     var conditionDateTo = $('#conditionDateTo').val();
+    var sortKey = getRadioVal('sortKey');
+    var sortOrder = getRadioVal('sortOrder');
     var jsondata = {
         "conditionTitle": conditionTitle,
         "conditionContent": conditionContent,
         "conditionDateFrom": conditionDateFrom,
-        "conditionDateTo": conditionDateTo
+        "conditionDateTo": conditionDateTo,
+        "sortKey": sortKey,
+        "sortOrder": sortOrder
     };
     $.ajax({
         url: "/search",
@@ -148,6 +155,16 @@ function createHtml(resArr, conditionTitle, conditionContent) {
 
     htmlStr += "</tbody>";
     return htmlStr;
+}
+
+function getRadioVal(itemName) {
+    var radioList = document.getElementsByName(itemName);
+    for (var i = 0; i < radioList.length; i++) {
+        if (radioList[i].checked) {
+            return radioList[i].value;
+        }
+    }
+    return null;
 }
 
 function createHtmlLine(resArrLine, conditionTitle, conditionContent) {

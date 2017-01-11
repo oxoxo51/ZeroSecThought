@@ -54,13 +54,37 @@ class MemoDao @Inject()(dbConfigProvider: DatabaseConfigProvider) {
     conditionDateFrom: Option[Date],
     conditionDateTo: Option[Date],
     conditionTitle: Option[String],
-    conditionContent: Option[String]): Future[List[Memo]] = {
+    conditionContent: Option[String],
+    sortKey: Option[String],
+    sortOrder: Option[String]): Future[List[Memo]] = {
     dbConfig.db.run(memos.filter( row =>
          (row.createDate >= conditionDateFrom.getOrElse(java.sql.Date.valueOf("1900-01-01")))
       && (row.createDate <= conditionDateTo.getOrElse(java.sql.Date.valueOf("9999-12-31")))
       && (row.title like s"%${conditionTitle.getOrElse("")}%")
       && (row.content like s"%${conditionContent.getOrElse("")}%")
-    ).sortBy(row => row.title).result).map(_.toList)
+    // ソート
+    ).sortBy[slick.lifted.Ordered](
+      {
+        sortKey match {
+          case Some("1") =>
+            sortOrder match {
+              case Some("1") => row => row.title
+              case Some("2") => row => row.title.desc
+              case _ => row => row.title
+            }
+          case Some("2") =>
+            sortOrder match {
+              case Some("1") => row => row.createDate
+              case Some("2") => row => row.createDate.desc
+              case _ => row => row.createDate
+            }
+          case _ =>
+            sortOrder match {
+              case Some("1") => row => row.title
+              case Some("2") => row => row.title.desc
+              case _ => row => row.title
+            }
+        }}).result).map(_.toList)
   }
 
   /**
