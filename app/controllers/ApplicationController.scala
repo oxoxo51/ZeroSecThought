@@ -94,10 +94,12 @@ class ApplicationController @Inject() (
 
     val conditionTitle = Option(request.body.asFormUrlEncoded.get.get("conditionTitle").get.head)
     val conditionContent = Option(request.body.asFormUrlEncoded.get.get("conditionContent").get.head)
+    val sortKey = Option(request.body.asFormUrlEncoded.get.get("sortKey").get.head)
+    val sortOrder = Option(request.body.asFormUrlEncoded.get.get("sortOrder").get.head)
 
-    Logger.debug(conditionTitle + "/" + conditionContent + "/" + conditionDateFrom + "/" + conditionDateTo )
+    Logger.debug(conditionTitle + "/" + conditionContent + "/" + conditionDateFrom + "/" + conditionDateTo + "/" + sortKey + "/" + sortOrder )
     val memos = Await.result(
-      dao.findMemos(conditionDateFrom, conditionDateTo, conditionTitle, conditionContent),
+      dao.findMemos(conditionDateFrom, conditionDateTo, conditionTitle, conditionContent, sortKey, sortOrder),
       Duration.Inf)
     val jsonMemos = Json.toJson(memos)
     Logger.debug(jsonMemos.toString)
