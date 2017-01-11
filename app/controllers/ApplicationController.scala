@@ -45,6 +45,21 @@ class ApplicationController @Inject() (
       }
     }
 
+    val sortKey = request.session.get("sortKey") match {
+      case None => None
+      case Some(s) => s match {
+        case "" => None
+        case _ => Some(s)
+      }
+    }
+    val sortOrder = request.session.get("sortOrder") match {
+      case None => None
+      case Some(s) => s match {
+        case "" => None
+        case _ => Some(s)
+      }
+    }
+
     val sdf = new SimpleDateFormat("yyyy/MM/dd")
     var weekMemoList = List.empty[(String, String)]
     // 1週間分ループを回し、日付＋日付のmem0件数を取得しListに詰める
@@ -66,12 +81,14 @@ class ApplicationController @Inject() (
     val yearCount = dao.getCount(new java.sql.Date(cal.getTime.getTime))
     monthYearList :+= (sdf.format(cal.getTime), Integer.toString(yearCount))
 
-    Logger.debug("session:" + conditionTitle + "/" + conditionContent + "/" + conditionDateFrom + "/" + conditionDateTo)
+    Logger.debug("session:" + conditionTitle + "/" + conditionContent + "/" + conditionDateFrom + "/" + conditionDateTo + "/" + sortKey + "/" + sortOrder)
     Future.successful(Ok(views.html.thoughtMemoList(
       conditionTitle,
       conditionContent,
       conditionDateFrom,
       conditionDateTo,
+      sortKey,
+      sortOrder,
       weekMemoList,
       monthYearList
     )))
@@ -107,7 +124,9 @@ class ApplicationController @Inject() (
       "conditionTitle" -> conditionTitle.getOrElse("").toString,
       "conditionContent" -> conditionContent.getOrElse("").toString,
       "conditionDateFrom" -> conditionDateFrom.getOrElse("").toString,
-      "conditionDateTo" -> conditionDateTo.getOrElse("").toString
+      "conditionDateTo" -> conditionDateTo.getOrElse("").toString,
+      "sortKey" -> sortKey.getOrElse("").toString,
+      "sortOrder" -> sortKey.getOrElse("").toString
     )
   }
 

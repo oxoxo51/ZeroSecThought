@@ -7,6 +7,8 @@ $(function(){
         $('#conditionContent').val("");
         $('#conditionDateFrom').val("");
         $('#conditionDateTo').val("");
+        document.getElementsByName('sortKey')[0].checked = true;
+        document.getElementsByName('sortOrder')[0].checked = true;
     });
     $('#setToday').click(function(){
         var today = new Date();
@@ -19,6 +21,7 @@ $(function(){
         $('#conditionDateFrom').val(today);
         $('#conditionDateTo').val(today);
     });
+    setRadioVal();
     search();
 });
 
@@ -156,7 +159,7 @@ function createHtml(resArr, conditionTitle, conditionContent) {
 
 function getRadioVal(itemName) {
     var radioList = document.getElementsByName(itemName);
-    for (var i = 0; radioList.length; i++) {
+    for (var i = 0; i < radioList.length; i++) {
         if (radioList[i].checked) {
             return radioList[i].value;
         }
