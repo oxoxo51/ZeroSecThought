@@ -87,14 +87,14 @@ function dispLoading(msg) {
     }
 }
 function removeLoading() {
-    $('loading').remove();
+    $('#loading').remove();
 }
 
 function createHtml(resArr, conditionTitle, conditionContent) {
     var htmlStr = (
-            "<tbody id='itemContainer'>"
-        +   "<thead><tr><th>削除</th><th>タイトル</th><th>内容</th><th>作成日</th></tr></thead>"
-        );
+            "<thead><tr><th>削除</th><th>タイトル</th><th>内容</th><th>作成日</th></tr></thead>"
+        +   "<tbody id='itemContainer'>"
+    );
     // 親子関係反映後の配列を初期化
     var treeArr = [];
     for (var i = 0; i < resArr.length; i++) {
