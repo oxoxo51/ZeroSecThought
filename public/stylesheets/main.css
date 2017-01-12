@@ -25,3 +25,23 @@
 body {
   -webkit-text-size-adjust: 100%;
 }
+
+/* 検索中メッセージ */
+#loading{
+    border:1px #999;
+    padding:15px;
+    top:50%;
+    left:50%;
+    background-color:#FFF;
+    filter: alpha(opacity=85);
+    -moz-opacity:0.85;
+    opacity:0.85;
+}
+
+#loading .loadingMsg{
+    text-align:center;
+    padding-top:60px;
+    background-image:url("/assets/images/gif-load.gif");
+    background-position: center top;
+    background-repeat: no-repeat;
+}

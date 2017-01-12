@@ -33,6 +33,7 @@ $(function(){
  *
  */
 function search() {
+    dispLoading("検索中...");
     var conditionTitle = $('#conditionTitle').val();
     var conditionContent = $('#conditionContent').val();
     var conditionDateFrom = $('#conditionDateFrom').val();
@@ -68,15 +69,32 @@ function search() {
                 midRange     : 5,
                 endRange     : 1
             });
+            removeLoading();
         }
     });
 }
 
+function dispLoading(msg) {
+    // 画面表示メッセージ
+    var dispMsg = "";
+    // 引数が空の場合は画像のみ表示
+    if (msg != "") {
+        dispMsg = "<div class='loadingMsg'>" + msg + "</div>"
+    }
+    // ローディング画像が表示されていない場合のみ表示
+    if ($('#loading').size() == 0) {
+        $('#searchResult').html("<div id='loading'>" + dispMsg + "</div>");
+    }
+}
+function removeLoading() {
+    $('loading').remove();
+}
+
 function createHtml(resArr, conditionTitle, conditionContent) {
     var htmlStr = (
-          "<thead><tr><th>削除</th><th>タイトル</th><th>内容</th><th>作成日</th></tr></thead>"
-        + "<tbody id='itemContainer'>"
-    );
+            "<tbody id='itemContainer'>"
+        +   "<thead><tr><th>削除</th><th>タイトル</th><th>内容</th><th>作成日</th></tr></thead>"
+        );
     // 親子関係反映後の配列を初期化
     var treeArr = [];
     for (var i = 0; i < resArr.length; i++) {
@@ -187,7 +205,6 @@ function createHtmlLine(resArrLine, conditionTitle, conditionContent) {
         + content + "</td><td class='memo_date'>"
         + resArrLine.createDate + "</td></tr>");
 }
-
 
 $(document).on('show.bs.modal', '#modalFade', function(){
     var button = $(event.target);
