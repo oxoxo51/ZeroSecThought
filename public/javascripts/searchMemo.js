@@ -92,7 +92,7 @@ function removeLoading() {
 
 function createHtml(resArr, conditionTitle, conditionContent) {
     var htmlStr = (
-            "<thead><tr><th>削除</th><th>タイトル</th><th>内容</th><th>作成日</th></tr></thead>"
+            "<thead><tr><th>fav</th><th>タイトル</th><th>内容</th><th>作成日</th><th>削除</th></tr></thead>"
         +   "<tbody id='itemContainer'>"
     );
     // 親子関係反映後の配列を初期化
@@ -199,11 +199,14 @@ function createHtmlLine(resArrLine, conditionTitle, conditionContent) {
     }
     // 1行分のHtmlを作成して返却
     return (
-        "<tr><td>"
-        + "<button type='button' class='memoRow btn btn-default btn-sm' id='" + resArrLine.id + "' data-toggle='modal' data-target='#modalFade' data-name='" + title + "'>×</button></td><td>"
-        + "<a href='/edit/" + resArrLine.id + "'>" + title + "</a></td><td>"
-        + content + "</td><td class='memo_date'>"
-        + resArrLine.createDate + "</td></tr>");
+        "<tr>"
+        + "<td><span class='fav-star glyphicon glyphicon-star-empty' aria-hidden='true'></span></td>"
+        + "<td><a href='/edit/" + resArrLine.id + "'>" + title + "</a></td>"
+        + "<td>" + content + "</td>"
+        + "<td class='memo_date'>" + resArrLine.createDate + "</td>"
+        + "<td><button type='button' class='memoRow btn btn-default btn-sm' id='" + resArrLine.id + "' data-toggle='modal' data-target='#modalFade' data-name='" + title + "'>×</button></td>"
+        + "</tr>"
+    );
 }
 
 $(document).on('show.bs.modal', '#modalFade', function(){
@@ -246,4 +249,17 @@ $(document).on('click', '.memoCnt', function(){
     $('#conditionDateFrom').val(date);
     $('#conditionDateTo').val(date);
     search();
+});
+
+$(document).on('click', '.fav-star', function(){
+    var class_arr = $(this).attr('Class').split(" ");
+    for (var i = 0; i < class_arr.length; i++) {
+        if (class_arr[i] == 'glyphicon-star-empty') {
+            $(this).removeClass('glyphicon-star-empty');
+            $(this).addClass('glyphicon-star');
+        } else if (class_arr[i] == 'glyphicon-star') {
+            $(this).removeClass('glyphicon-star');
+            $(this).addClass('glyphicon-star-empty');
+        }
+    }
 });
