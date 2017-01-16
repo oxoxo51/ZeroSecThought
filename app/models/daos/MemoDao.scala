@@ -30,7 +30,8 @@ class MemoDao @Inject()(dbConfigProvider: DatabaseConfigProvider) {
     def title = column[String]("title")
     def content = column[String]("content")
     def createDate = column[java.sql.Date]("create_date")
-    def * = (id.?, parentId.?, title, content, createDate) <> ((Memo.apply _).tupled, Memo.unapply)
+    def fav = column[String]("fav")
+    def * = (id.?, parentId.?, title, content, createDate, fav) <> ((Memo.apply _).tupled, Memo.unapply)
   }
 
   private val memos = TableQuery[MemoTable]
@@ -135,6 +136,17 @@ class MemoDao @Inject()(dbConfigProvider: DatabaseConfigProvider) {
     )
   }
 
+  def updateFav(id: Long, fav: String): Future[Int] = {
+    dbConfig.db.run(memos.filter(_.id === id).map(
+      m => (
+        m.fav
+      )
+    ).update(
+      fav
+      )
+    )
+  }
+
   /**
     * DELETE.
     * @param id
@@ -142,4 +154,6 @@ class MemoDao @Inject()(dbConfigProvider: DatabaseConfigProvider) {
     */
   def delete(id: Long): Future[Int] =
     dbConfig.db.run(memos.filter(_.id === id).delete)
+
+
 }

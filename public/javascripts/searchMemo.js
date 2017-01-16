@@ -73,6 +73,21 @@ function search() {
         }
     });
 }
+function upd_fav(id, flag) {
+    var jsondata = {
+        "memoId": id,
+        "favFlg": flag
+    };
+    $.ajax({
+        url: "/updfav",
+        type: 'POST',
+        data: jsondata,
+        complete: function(result){
+            // TODO 「favのみ」がチェックされている場合、on/off切替で抽出条件から外れるため、
+            // 一覧から削除および件数-1する(削除処理から該当箇所切り出して共通化)
+        }
+    });
+}
 
 function dispLoading(msg) {
     // 画面表示メッセージ
@@ -197,10 +212,15 @@ function createHtmlLine(resArrLine, conditionTitle, conditionContent) {
     if (conditionContent !== "") {
         content = content.replace(contentRegExp, '<mark>' + conditionContent + '</mark>');
     }
+    // fav on/off
+    var starClass = "glyphicon-star-empty"; // off
+    if (resArrLine.fav == "1") {
+        starClass = "glyphicon-star"; // on
+    }
     // 1行分のHtmlを作成して返却
     return (
         "<tr>"
-        + "<td><span class='fav-star glyphicon glyphicon-star-empty' aria-hidden='true'></span></td>"
+        + "<td><span id='fav_" + resArrLine.id + "' class='fav-star glyphicon " + starClass + "' aria-hidden='true'></span></td>"
         + "<td><a href='/edit/" + resArrLine.id + "'>" + title + "</a></td>"
         + "<td>" + content + "</td>"
         + "<td class='memo_date'>" + resArrLine.createDate + "</td>"
@@ -253,13 +273,20 @@ $(document).on('click', '.memoCnt', function(){
 
 $(document).on('click', '.fav-star', function(){
     var class_arr = $(this).attr('Class').split(" ");
+    // メモid取得
+    var memo_id = $(this).attr('id').split("fav_")[1];
+    var fav_flg = "0";
+    // fav on/off
     for (var i = 0; i < class_arr.length; i++) {
         if (class_arr[i] == 'glyphicon-star-empty') {
             $(this).removeClass('glyphicon-star-empty');
             $(this).addClass('glyphicon-star');
+            fav_flg = "1";
         } else if (class_arr[i] == 'glyphicon-star') {
             $(this).removeClass('glyphicon-star');
             $(this).addClass('glyphicon-star-empty');
+            fav_flg = "0";
         }
     }
+    upd_fav(memo_id, fav_flg);
 });

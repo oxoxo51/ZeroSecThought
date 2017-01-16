@@ -12,7 +12,8 @@ case class Memo
   parentId: Option[Long],
   title: String,
   content: String,
-  createDate: java.sql.Date
+  createDate: java.sql.Date,
+  fav: String
 )
 object Memo {
   val sqlDateWrite = Writes.sqlDateWrites("yyyy/MM/dd")
@@ -21,7 +22,8 @@ object Memo {
     (__ \ "parentId").write[Option[Long]] and
     (__ \ "title").write[String] and
     (__ \ "content").write[String] and
-    (__ \ "createDate").write[java.sql.Date](sqlDateWrite)
+    (__ \ "createDate").write[java.sql.Date](sqlDateWrite) and
+    (__ \ "fav").write[String]
   )(unlift(Memo.unapply))
   implicit def jsonReads = Json.reads[Memo]
 }

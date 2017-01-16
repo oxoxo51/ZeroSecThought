@@ -140,4 +140,16 @@ class ApplicationController @Inject() (
       Duration.Inf)
     Ok(request.body.asJson.orNull)
   }
+
+  def updFav = Action { implicit request =>
+    Logger.debug(request.body.asFormUrlEncoded.get.toString)
+
+    val id = request.body.asFormUrlEncoded.get.get("memoId").get.head
+    val flag = request.body.asFormUrlEncoded.get.get("favFlg").get.head
+
+    val num = Await.result(
+      dao.updateFav(id.toLong, flag),
+      Duration.Inf)
+    Ok(request.body.asJson.orNull)
+  }
 }
