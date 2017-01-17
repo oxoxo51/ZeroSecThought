@@ -9,6 +9,7 @@ $(function(){
         $('#conditionDateTo').val("");
         document.getElementsByName('sortKey')[0].checked = true;
         document.getElementsByName('sortOrder')[0].checked = true;
+        $('#favCheck').prop('checked', false);
     });
     $('#setToday').click(function(){
         var today = new Date();
@@ -22,6 +23,7 @@ $(function(){
         $('#conditionDateTo').val(today);
     });
     setRadioVal();
+    setFavCheck();
     search();
 });
 
@@ -40,7 +42,7 @@ function search() {
     var conditionDateTo = $('#conditionDateTo').val();
     var sortKey = getRadioVal('sortKey');
     var sortOrder = getRadioVal('sortOrder');
-    var favChecked = getFavChecked();
+    var favChecked = getFavCheck();
     var jsondata = {
         "conditionTitle": conditionTitle,
         "conditionContent": conditionContent,

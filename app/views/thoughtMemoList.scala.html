@@ -7,6 +7,7 @@
   iniConDateTo: Option[java.sql.Date],
   iniSortKey: Option[String],
   iniSortOrder: Option[String],
+  iniFavChecked: Option[String],
   weekMemoList: List[(String, String)],
   monthYearList: List[(String, String)])(implicit request: RequestHeader, messages: Messages, webJarAssets: WebJarAssets)
 @import helper._
@@ -21,12 +22,12 @@ function setRadioVal() {
     var radioKeyList = document.getElementsByName('sortKey');
     var radioOrderList = document.getElementsByName('sortOrder');
     for (var i = 0; i < radioKeyList.length; i++) {
-        if (radioKeyList[i].value == @iniSortKey.getOrElse("1")) {
+        if (radioKeyList[i].value == @iniSortKey.getOrElse(1)) {
             radioKeyList[i].checked = true;
         }
     }
     for (var i = 0; i < radioOrderList.length; i++) {
-        if (radioOrderList[i].value == @(iniSortOrder.getOrElse("1"))) {
+        if (radioOrderList[i].value == @(iniSortOrder.getOrElse(1))) {
             radioOrderList[i].checked = true;
         }
     }
@@ -40,7 +41,14 @@ function getRadioVal(itemName) {
     }
     return null;
 }
-function getFavChecked() {
+function setFavCheck() {
+    if (@iniFavChecked.getOrElse(0) === 1) {
+        $('#favCheck').prop('checked', true);
+    } else {
+        $('#favCheck').prop('checked', false);
+    }
+}
+function getFavCheck() {
     if ($('#favCheck').prop('checked')) {
         return "1";
     }
