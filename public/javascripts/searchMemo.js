@@ -225,7 +225,7 @@ function createHtmlLine(resArrLine, conditionTitle, conditionContent) {
 
 $(document).on('show.bs.modal', '#modalFade', function(){
     var button = $(event.target);
-    var msg = "「" + button.data('name').replace('<mark>', '').replace('</mark>', '') + "」を削除します。";
+    var msg = "「" + String(button.data('name')).replace('<mark>', '').replace('</mark>', '') + "」を削除します。";
     var modal = $(this);
     var delId = button.attr('id');
     modal.find('#delMsg').removeClass();
