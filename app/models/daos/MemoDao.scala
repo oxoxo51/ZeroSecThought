@@ -57,12 +57,16 @@ class MemoDao @Inject()(dbConfigProvider: DatabaseConfigProvider) {
     conditionTitle: Option[String],
     conditionContent: Option[String],
     sortKey: Option[String],
-    sortOrder: Option[String]): Future[List[Memo]] = {
+    sortOrder: Option[String],
+    favChecked: Option[String]): Future[List[Memo]] = {
     dbConfig.db.run(memos.filter( row =>
          (row.createDate >= conditionDateFrom.getOrElse(java.sql.Date.valueOf("1900-01-01")))
       && (row.createDate <= conditionDateTo.getOrElse(java.sql.Date.valueOf("9999-12-31")))
       && (row.title like s"%${conditionTitle.getOrElse("")}%")
       && (row.content like s"%${conditionContent.getOrElse("")}%")
+      && (if (favChecked.contains("1")) {
+           row.fav === "1"
+         } else 1 == 1)
     // ソート
     ).sortBy[slick.lifted.Ordered](
       {

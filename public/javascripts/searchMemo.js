@@ -40,13 +40,15 @@ function search() {
     var conditionDateTo = $('#conditionDateTo').val();
     var sortKey = getRadioVal('sortKey');
     var sortOrder = getRadioVal('sortOrder');
+    var favChecked = getFavChecked();
     var jsondata = {
         "conditionTitle": conditionTitle,
         "conditionContent": conditionContent,
         "conditionDateFrom": conditionDateFrom,
         "conditionDateTo": conditionDateTo,
         "sortKey": sortKey,
-        "sortOrder": sortOrder
+        "sortOrder": sortOrder,
+        "favChecked": favChecked
     };
     $.ajax({
         url: "/search",
@@ -188,16 +190,6 @@ function createHtml(resArr, conditionTitle, conditionContent) {
 
     htmlStr += "</tbody>";
     return htmlStr;
-}
-
-function getRadioVal(itemName) {
-    var radioList = document.getElementsByName(itemName);
-    for (var i = 0; i < radioList.length; i++) {
-        if (radioList[i].checked) {
-            return radioList[i].value;
-        }
-    }
-    return null;
 }
 
 function createHtmlLine(resArrLine, conditionTitle, conditionContent) {
