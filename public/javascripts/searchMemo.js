@@ -87,8 +87,11 @@ function upd_fav(id, flag) {
         type: 'POST',
         data: jsondata,
         complete: function(result){
-            // TODO 「favのみ」がチェックされている場合、on/off切替で抽出条件から外れるため、
-            // 一覧から削除および件数-1する(削除処理から該当箇所切り出して共通化)
+            // 「favのみ」がチェックされている場合、on/off切替で抽出条件から外れるため、
+            // 一覧から削除および件数-1する
+            if (getFavCheck() === "1") {
+                removeLine(id);
+            }
         }
     });
 }
@@ -223,9 +226,11 @@ function createHtmlLine(resArrLine, conditionTitle, conditionContent) {
     );
 }
 
-function removeLine(remLine, count) {
-    remLine.remove();
-    return count - 1;
+function removeLine(id) {
+    // 消すライン：削除ボタンのIDから要素特定
+    $('button#' + id).parents("tr").remove();
+    // 一覧の件数を1件減らす
+    $('#resArrCount').html(Number($('#resArrCount').text()) - 1);
 }
 
 $(document).on('show.bs.modal', '#modalFade', function(){
@@ -254,10 +259,7 @@ $(document).on('click', '#delOk', function(){
             var dateCount = Number($('#cnt_' + memoDate.replace(/\//g, "\\/")).text()) - 1;
             $('#cnt_' + memoDate.replace(/\//g, "\\/")).html(dateCount);
             // 行削除
-            var remLine = $('button#' + id).parents("tr");
-            var count = Number($('#resArrCount').text());
-
-            $('#resArrCount').html(removeLine(remLine, count));
+            $('#resArrCount').html(removeLine(id));
         }
     });
 });
