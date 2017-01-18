@@ -32,7 +32,7 @@ class EditThoughtMemoController @Inject() (
       if (id==0) {
         Future(Ok(views.html.editThoughtMemo(
           MemoForms.memoForm.fill(
-            MemoForm(Some("C"), new Memo(None, None, "", "", today))
+            MemoForm(Some("C"), new Memo(None, None, "", "", today, "0"))
           ), Option(dao.getCount(today)),
              Await.result(dao.getMemos(), Duration.Inf)
         )))

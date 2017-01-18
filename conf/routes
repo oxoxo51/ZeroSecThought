@@ -5,6 +5,7 @@
 GET  /             controllers.ApplicationController.index
 POST /search       controllers.ApplicationController.searchMemo
 POST /delete       controllers.ApplicationController.deleteMemo
+POST /updfav       controllers.ApplicationController.updFav
 
 GET  /edit/:id     controllers.EditThoughtMemoController.displayEdit(id: Long)
 POST /register     controllers.EditThoughtMemoController.register

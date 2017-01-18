@@ -9,6 +9,7 @@ $(function(){
         $('#conditionDateTo').val("");
         document.getElementsByName('sortKey')[0].checked = true;
         document.getElementsByName('sortOrder')[0].checked = true;
+        $('#favCheck').prop('checked', false);
     });
     $('#setToday').click(function(){
         var today = new Date();
@@ -22,6 +23,7 @@ $(function(){
         $('#conditionDateTo').val(today);
     });
     setRadioVal();
+    setFavCheck();
     search();
 });
 
@@ -40,13 +42,15 @@ function search() {
     var conditionDateTo = $('#conditionDateTo').val();
     var sortKey = getRadioVal('sortKey');
     var sortOrder = getRadioVal('sortOrder');
+    var favChecked = getFavCheck();
     var jsondata = {
         "conditionTitle": conditionTitle,
         "conditionContent": conditionContent,
         "conditionDateFrom": conditionDateFrom,
         "conditionDateTo": conditionDateTo,
         "sortKey": sortKey,
-        "sortOrder": sortOrder
+        "sortOrder": sortOrder,
+        "favChecked": favChecked
     };
     $.ajax({
         url: "/search",
@@ -73,6 +77,24 @@ function search() {
         }
     });
 }
+function upd_fav(id, flag) {
+    var jsondata = {
+        "memoId": id,
+        "favFlg": flag
+    };
+    $.ajax({
+        url: "/updfav",
+        type: 'POST',
+        data: jsondata,
+        complete: function(result){
+            // 「favのみ」がチェックされている場合、on/off切替で抽出条件から外れるため、
+            // 一覧から削除および件数-1する
+            if (getFavCheck() === "1") {
+                removeLine(id);
+            }
+        }
+    });
+}
 
 function dispLoading(msg) {
     // 画面表示メッセージ
@@ -92,7 +114,7 @@ function removeLoading() {
 
 function createHtml(resArr, conditionTitle, conditionContent) {
     var htmlStr = (
-            "<thead><tr><th>削除</th><th>タイトル</th><th>内容</th><th>作成日</th></tr></thead>"
+            "<thead><tr><th>fav</th><th>タイトル</th><th>内容</th><th>作成日</th><th>削除</th></tr></thead>"
         +   "<tbody id='itemContainer'>"
     );
     // 親子関係反映後の配列を初期化
@@ -175,16 +197,6 @@ function createHtml(resArr, conditionTitle, conditionContent) {
     return htmlStr;
 }
 
-function getRadioVal(itemName) {
-    var radioList = document.getElementsByName(itemName);
-    for (var i = 0; i < radioList.length; i++) {
-        if (radioList[i].checked) {
-            return radioList[i].value;
-        }
-    }
-    return null;
-}
-
 function createHtmlLine(resArrLine, conditionTitle, conditionContent) {
     // 検索条件のタイトル・本文に合致する箇所をmarkする
     var titleRegExp = new RegExp(conditionTitle, "g");
@@ -197,18 +209,33 @@ function createHtmlLine(resArrLine, conditionTitle, conditionContent) {
     if (conditionContent !== "") {
         content = content.replace(contentRegExp, '<mark>' + conditionContent + '</mark>');
     }
+    // fav on/off
+    var starClass = "glyphicon-star-empty"; // off
+    if (resArrLine.fav == "1") {
+        starClass = "glyphicon-star"; // on
+    }
     // 1行分のHtmlを作成して返却
     return (
-        "<tr><td>"
-        + "<button type='button' class='memoRow btn btn-default btn-sm' id='" + resArrLine.id + "' data-toggle='modal' data-target='#modalFade' data-name='" + title + "'>×</button></td><td>"
-        + "<a href='/edit/" + resArrLine.id + "'>" + title + "</a></td><td>"
-        + content + "</td><td class='memo_date'>"
-        + resArrLine.createDate + "</td></tr>");
+        "<tr>"
+        + "<td><span id='fav_" + resArrLine.id + "' class='fav-star glyphicon " + starClass + "' aria-hidden='true'></span></td>"
+        + "<td><a href='/edit/" + resArrLine.id + "'>" + title + "</a></td>"
+        + "<td>" + content + "</td>"
+        + "<td class='memo_date'>" + resArrLine.createDate + "</td>"
+        + "<td><button type='button' class='memoRow btn btn-default btn-sm' id='" + resArrLine.id + "' data-toggle='modal' data-target='#modalFade' data-name='" + title + "'>×</button></td>"
+        + "</tr>"
+    );
+}
+
+function removeLine(id) {
+    // 消すライン：削除ボタンのIDから要素特定
+    $('button#' + id).parents("tr").remove();
+    // 一覧の件数を1件減らす
+    $('#resArrCount').html(Number($('#resArrCount').text()) - 1);
 }
 
 $(document).on('show.bs.modal', '#modalFade', function(){
     var button = $(event.target);
-    var msg = "「" + button.data('name').replace('<mark>', '').replace('</mark>', '') + "」を削除します。";
+    var msg = "「" + String(button.data('name')).replace('<mark>', '').replace('</mark>', '') + "」を削除します。";
     var modal = $(this);
     var delId = button.attr('id');
     modal.find('#delMsg').removeClass();
@@ -232,18 +259,34 @@ $(document).on('click', '#delOk', function(){
             var dateCount = Number($('#cnt_' + memoDate.replace(/\//g, "\\/")).text()) - 1;
             $('#cnt_' + memoDate.replace(/\//g, "\\/")).html(dateCount);
             // 行削除
-            $('button#' + id).parents("tr").remove();
-            var resultCount = Number($('#resArrCount').text()) - 1;
-
-            $('#resArrCount').html(resultCount);
+            $('#resArrCount').html(removeLine(id));
         }
     });
 });
-
 
 $(document).on('click', '.memoCnt', function(){
     var date = $(this).text().replace(/\//g, '-');
     $('#conditionDateFrom').val(date);
     $('#conditionDateTo').val(date);
     search();
+});
+
+$(document).on('click', '.fav-star', function(){
+    var class_arr = $(this).attr('Class').split(" ");
+    // メモid取得
+    var memo_id = $(this).attr('id').split("fav_")[1];
+    var fav_flg = "0";
+    // fav on/off
+    for (var i = 0; i < class_arr.length; i++) {
+        if (class_arr[i] == 'glyphicon-star-empty') {
+            $(this).removeClass('glyphicon-star-empty');
+            $(this).addClass('glyphicon-star');
+            fav_flg = "1";
+        } else if (class_arr[i] == 'glyphicon-star') {
+            $(this).removeClass('glyphicon-star');
+            $(this).addClass('glyphicon-star-empty');
+            fav_flg = "0";
+        }
+    }
+    upd_fav(memo_id, fav_flg);
 });

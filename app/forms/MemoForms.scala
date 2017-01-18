@@ -19,15 +19,16 @@ object MemoForms {
         "parentId" -> optional(longNumber),
         "title" -> nonEmptyText,
         "content" -> nonEmptyText,
-        "createDate" -> sqlDate("yyyy-MM-dd")
+        "createDate" -> sqlDate("yyyy-MM-dd"),
+        "fav" -> text
       )
       (
-        (id, parentId, title, content, createDate)
-        => new Memo(id, parentId, title, content, createDate)
+        (id, parentId, title, content, createDate, fav)
+        => new Memo(id, parentId, title, content, createDate, fav)
       )
       (
         (m: Memo)
-        => Some(m.id, m.parentId, m.title, m.content, m.createDate)
+        => Some(m.id, m.parentId, m.title, m.content, m.createDate, m.fav)
       )
     )(MemoForm.apply)(MemoForm.unapply)
   )

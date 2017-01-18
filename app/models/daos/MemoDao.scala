@@ -30,7 +30,8 @@ class MemoDao @Inject()(dbConfigProvider: DatabaseConfigProvider) {
     def title = column[String]("title")
     def content = column[String]("content")
     def createDate = column[java.sql.Date]("create_date")
-    def * = (id.?, parentId.?, title, content, createDate) <> ((Memo.apply _).tupled, Memo.unapply)
+    def fav = column[String]("fav")
+    def * = (id.?, parentId.?, title, content, createDate, fav) <> ((Memo.apply _).tupled, Memo.unapply)
   }
 
   private val memos = TableQuery[MemoTable]
@@ -56,12 +57,16 @@ class MemoDao @Inject()(dbConfigProvider: DatabaseConfigProvider) {
     conditionTitle: Option[String],
     conditionContent: Option[String],
     sortKey: Option[String],
-    sortOrder: Option[String]): Future[List[Memo]] = {
+    sortOrder: Option[String],
+    favChecked: Option[String]): Future[List[Memo]] = {
     dbConfig.db.run(memos.filter( row =>
          (row.createDate >= conditionDateFrom.getOrElse(java.sql.Date.valueOf("1900-01-01")))
       && (row.createDate <= conditionDateTo.getOrElse(java.sql.Date.valueOf("9999-12-31")))
       && (row.title like s"%${conditionTitle.getOrElse("")}%")
       && (row.content like s"%${conditionContent.getOrElse("")}%")
+      && (if (favChecked.contains("1")) {
+           row.fav === "1"
+         } else 1 == 1)
     // ソート
     ).sortBy[slick.lifted.Ordered](
       {
@@ -135,6 +140,17 @@ class MemoDao @Inject()(dbConfigProvider: DatabaseConfigProvider) {
     )
   }
 
+  def updateFav(id: Long, fav: String): Future[Int] = {
+    dbConfig.db.run(memos.filter(_.id === id).map(
+      m => (
+        m.fav
+      )
+    ).update(
+      fav
+      )
+    )
+  }
+
   /**
     * DELETE.
     * @param id
@@ -142,4 +158,6 @@ class MemoDao @Inject()(dbConfigProvider: DatabaseConfigProvider) {
     */
   def delete(id: Long): Future[Int] =
     dbConfig.db.run(memos.filter(_.id === id).delete)
+
+
 }

@@ -60,6 +60,11 @@ class ApplicationController @Inject() (
       }
     }
 
+    val favChecked = request.session.get("favChecked") match {
+      case None => Some("0")
+      case Some (s) => Some(s)
+    }
+
     val sdf = new SimpleDateFormat("yyyy/MM/dd")
     var weekMemoList = List.empty[(String, String)]
     // 1週間分ループを回し、日付＋日付のmem0件数を取得しListに詰める
@@ -81,7 +86,10 @@ class ApplicationController @Inject() (
     val yearCount = dao.getCount(new java.sql.Date(cal.getTime.getTime))
     monthYearList :+= (sdf.format(cal.getTime), Integer.toString(yearCount))
 
-    Logger.debug("session:" + conditionTitle + "/" + conditionContent + "/" + conditionDateFrom + "/" + conditionDateTo + "/" + sortKey + "/" + sortOrder)
+    Logger.debug("session:" + conditionTitle + "/"
+      + conditionContent + "/" + conditionDateFrom + "/"
+      + conditionDateTo + "/" + sortKey + "/"
+      + sortOrder + "/" + favChecked)
     Future.successful(Ok(views.html.thoughtMemoList(
       conditionTitle,
       conditionContent,
@@ -89,6 +97,7 @@ class ApplicationController @Inject() (
       conditionDateTo,
       sortKey,
       sortOrder,
+      favChecked,
       weekMemoList,
       monthYearList
     )))
@@ -113,10 +122,11 @@ class ApplicationController @Inject() (
     val conditionContent = Option(request.body.asFormUrlEncoded.get.get("conditionContent").get.head)
     val sortKey = Option(request.body.asFormUrlEncoded.get.get("sortKey").get.head)
     val sortOrder = Option(request.body.asFormUrlEncoded.get.get("sortOrder").get.head)
+    val favChecked = Option(request.body.asFormUrlEncoded.get.get("favChecked").get.head)
 
-    Logger.debug(conditionTitle + "/" + conditionContent + "/" + conditionDateFrom + "/" + conditionDateTo + "/" + sortKey + "/" + sortOrder )
+    Logger.debug(conditionTitle + "/" + conditionContent + "/" + conditionDateFrom + "/" + conditionDateTo + "/" + sortKey + "/" + sortOrder + "/" + favChecked)
     val memos = Await.result(
-      dao.findMemos(conditionDateFrom, conditionDateTo, conditionTitle, conditionContent, sortKey, sortOrder),
+      dao.findMemos(conditionDateFrom, conditionDateTo, conditionTitle, conditionContent, sortKey, sortOrder, favChecked),
       Duration.Inf)
     val jsonMemos = Json.toJson(memos)
     Logger.debug(jsonMemos.toString)
@@ -126,7 +136,8 @@ class ApplicationController @Inject() (
       "conditionDateFrom" -> conditionDateFrom.getOrElse("").toString,
       "conditionDateTo" -> conditionDateTo.getOrElse("").toString,
       "sortKey" -> sortKey.getOrElse("").toString,
-      "sortOrder" -> sortKey.getOrElse("").toString
+      "sortOrder" -> sortKey.getOrElse("").toString,
+      "favChecked" -> favChecked.getOrElse("0").toString
     )
   }
 
@@ -137,6 +148,18 @@ class ApplicationController @Inject() (
     val id = request.body.asFormUrlEncoded.get.get("id").get.head
     val num = Await.result(
       dao.delete(id.toLong),
+      Duration.Inf)
+    Ok(request.body.asJson.orNull)
+  }
+
+  def updFav = Action { implicit request =>
+    Logger.debug(request.body.asFormUrlEncoded.get.toString)
+
+    val id = request.body.asFormUrlEncoded.get.get("memoId").get.head
+    val flag = request.body.asFormUrlEncoded.get.get("favFlg").get.head
+
+    val num = Await.result(
+      dao.updateFav(id.toLong, flag),
       Duration.Inf)
     Ok(request.body.asJson.orNull)
   }
