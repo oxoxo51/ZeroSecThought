@@ -223,6 +223,11 @@ function createHtmlLine(resArrLine, conditionTitle, conditionContent) {
     );
 }
 
+function removeLine(remLine, count) {
+    remLine.remove();
+    return count - 1;
+}
+
 $(document).on('show.bs.modal', '#modalFade', function(){
     var button = $(event.target);
     var msg = "「" + String(button.data('name')).replace('<mark>', '').replace('</mark>', '') + "」を削除します。";
@@ -249,14 +254,13 @@ $(document).on('click', '#delOk', function(){
             var dateCount = Number($('#cnt_' + memoDate.replace(/\//g, "\\/")).text()) - 1;
             $('#cnt_' + memoDate.replace(/\//g, "\\/")).html(dateCount);
             // 行削除
-            $('button#' + id).parents("tr").remove();
-            var resultCount = Number($('#resArrCount').text()) - 1;
+            var remLine = $('button#' + id).parents("tr");
+            var count = Number($('#resArrCount').text());
 
-            $('#resArrCount').html(resultCount);
+            $('#resArrCount').html(removeLine(remLine, count));
         }
     });
 });
-
 
 $(document).on('click', '.memoCnt', function(){
     var date = $(this).text().replace(/\//g, '-');

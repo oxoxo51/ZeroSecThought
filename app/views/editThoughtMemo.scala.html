@@ -48,6 +48,7 @@
 @form(action=routes.EditThoughtMemoController.register()){
     <input type="hidden" name="command" value="@memoForm("command").value">
     <input type="hidden" name="db.id" value="@memoForm("db.id").value">
+    <input type="hidden" name="db.fav" value="@memoForm("db.fav").value">
     <table>
         <tr valign="top">
             <td>
