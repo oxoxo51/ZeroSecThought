@@ -1,7 +1,4 @@
 $(function(){
-    $('#submitCondition').click(function(){
-        search();
-    });
     $('#clearCondition').click(function(){
         $('#conditionTitle').val("");
         $('#conditionContent').val("");
