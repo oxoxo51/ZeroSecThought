@@ -237,7 +237,7 @@ function createHtmlLine(resArrLine, conditionTitle, conditionContent) {
     // 1行分のHtmlを作成して返却
     return (
         "<tr>"
-        + "<td><span id='fav_" + resArrLine.id + "' class='fav-star glyphicon " + starClass + "' aria-hidden='true'></span></td>"
+        + "<td><button id='fav_" + resArrLine.id + "' class='btn btn-link btn-xs fav-star glyphicon " + starClass + "' aria-hidden='true'></button></td>"
         + "<td><a href='/edit/" + resArrLine.id + "'>" + title + "</a></td>"
         + "<td>" + content + "</td>"
         + "<td class='memo_date'>" + resArrLine.createDate + "</td>"
