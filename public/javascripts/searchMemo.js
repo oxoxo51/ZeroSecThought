@@ -7,9 +7,10 @@ $(function(){
         $('#conditionContent').val("");
         $('#conditionDateFrom').val("");
         $('#conditionDateTo').val("");
-        document.getElementsByName('sortKey')[0].checked = true;
-        document.getElementsByName('sortOrder')[0].checked = true;
+        $('input[name="sortKey"]:radio')[0].checked = true;
+        $('input[name="sortOrder"]:radio')[0].checked = true;
         $('#favCheck').prop('checked', false);
+        search();
     });
     $('#setToday').click(function(){
         var today = new Date();
@@ -21,6 +22,28 @@ $(function(){
         today = yyyy + '-' + mm + '-' + dd;
         $('#conditionDateFrom').val(today);
         $('#conditionDateTo').val(today);
+        search();
+    });
+    $('#conditionTitle').focusout(function(){
+        search();
+    });
+    $('#conditionContent').focusout(function(){
+        search();
+    });
+    $('#conditionDateFrom').focusout(function(){
+        search();
+    });
+    $('#conditionDateTo').focusout(function(){
+        search();
+    });
+    $('#favCheck').change(function(){
+        search();
+    });
+    $('input[name="sortKey"]:radio').change(function(){
+        search();
+    });
+    $('input[name="sortOrder"]:radio').change(function(){
+        search();
     });
     setRadioVal();
     setFavCheck();
