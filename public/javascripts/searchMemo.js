@@ -1,4 +1,9 @@
 $(function(){
+    var tmpConditionTitle = "";
+    var tmpConditionContent = "";
+    var tmpConditionDateFrom = "";
+    var tmpConditionDateTo = "";
+
     $('#clearCondition').click(function(){
         $('#conditionTitle').val("");
         $('#conditionContent').val("");
@@ -21,17 +26,38 @@ $(function(){
         $('#conditionDateTo').val(today);
         search();
     });
+    // focusout時、focusin時点と値が変わっている場合のみ検索
+    $('#conditionTitle').focusin(function(){
+        tmpConditionTitle = this.value;
+    });
     $('#conditionTitle').focusout(function(){
-        search();
+        if (tmpConditionTitle !== this.value) {
+            search();
+        }
+    });
+    $('#conditionContent').focusin(function(){
+        tmpConditionContent = this.value;
     });
     $('#conditionContent').focusout(function(){
-        search();
+        if (tmpConditionContent !== this.value) {
+            search();
+        }
+    });
+    $('#conditionDateFrom').focusin(function(){
+        tmpConditionDateFrom = this.value;
     });
     $('#conditionDateFrom').focusout(function(){
-        search();
+        if(tmpConditionDateFrom !== this.value) {
+            search();
+        }
+    });
+    $('#conditionDateTo').focusin(function(){
+        tmpConditionDateTo = this.value;
     });
     $('#conditionDateTo').focusout(function(){
-        search();
+        if(tmpConditionDateTo !== this.value) {
+            search();
+        }
     });
     $('#favCheck').change(function(){
         search();
