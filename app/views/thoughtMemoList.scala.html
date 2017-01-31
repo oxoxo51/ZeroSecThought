@@ -1,6 +1,18 @@
-@*
- * メモ一覧画面.
-*@
+@**
+  * メモ一覧画面.
+  * @param iniConTitle
+  * @param iniConContent
+  * @param iniConDateFrom
+  * @param iniConDateTo
+  * @param iniSortKey
+  * @param iniSortOrder
+  * @param iniFavChecked
+  * @param weekMemoList 過去1週間の日付とメモ件数のリスト
+  * @param monthYearList 1か月前、1年前の日付とメモ件数のリスト
+  * @param request
+  * @param messages
+  * @param webJarAssets
+  *@
 @(iniConTitle: Option[String],
   iniConContent: Option[String],
   iniConDateFrom: Option[java.sql.Date],
@@ -18,6 +30,10 @@
 </div>
 }{
 <script type="text/javascript">
+/**
+  * ラジオボタン値セットイベント.
+  * 検索条件の初期値として渡された値に従いラジオボタンの選択肢を決める.
+  */
 function setRadioVal() {
     var radioKeyList = document.getElementsByName('sortKey');
     var radioOrderList = document.getElementsByName('sortOrder');
@@ -32,6 +48,10 @@ function setRadioVal() {
         }
     }
 }
+/**
+  * ラジオボタン値取得イベント.
+  * ラジオボタンの選択状態からDB格納用の値を取得する.
+  */
 function getRadioVal(itemName) {
     var radioList = document.getElementsByName(itemName);
     for (var i = 0; i < radioList.length; i++) {
@@ -41,6 +61,10 @@ function getRadioVal(itemName) {
     }
     return null;
 }
+/**
+  * favのみチェック状態設定イベント
+  * 検索条件の初期値として与えられた値に従いチェックボックスのOn/Offを設定する.
+  */
 function setFavCheck() {
     if (@iniFavChecked.getOrElse(0) === 1) {
         $('#favCheck').prop('checked', true);
@@ -48,6 +72,10 @@ function setFavCheck() {
         $('#favCheck').prop('checked', false);
     }
 }
+/**
+  * favのみチェック状態取得イベント.
+  * チェックボックスの状態からDB格納用の値を取得する,
+  */
 function getFavCheck() {
     if ($('#favCheck').prop('checked')) {
         return "1";
@@ -55,10 +83,15 @@ function getFavCheck() {
     return "0";
 }
 </script>
+@* 外だしJavaScript *@
 <script src="@routes.Assets.versioned("javascripts/searchMemo.js")" type="text/javascript"></script>
+@* 検索条件パネル *@
 <div class="panel panel-group panel-info row" id="menuPanel">
+    @* パネルタイトル *@
     <div class="panel-heading"><a data-toggle="collapse" href="#dispMenu">表示メニュー</a></div>
+    @* 表示メニュー（開閉可能） *@
     <div class="panel-body panel-collapse collapse in" id="dispMenu">
+        @* 過去1週間のメモ件数エリア *@
         <div class="col-md-3 col-sm-6">
             <div class="panel panel-default">
                 <div class="panel-heading">過去1週間</div>
@@ -74,6 +107,7 @@ function getFavCheck() {
                 </div>
             </div>
         </div>
+        @* 1か月前・1年前のメモ件数エリア *@
         <div class="col-md-3 col-sm-6">
             <div class="panel panel-default">
                 <div class="panel-heading">1か月前・1年前</div>
@@ -89,6 +123,7 @@ function getFavCheck() {
                 </div>
             </div>
         </div>
+        @* 検索条件個別指定エリア *@
         <div class="col-md-6 col-sm-12">
             <div class="panel panel-default">
                 <div class="panel-heading">検索条件</div>
@@ -176,6 +211,7 @@ function getFavCheck() {
             </div>
         </div>
     </div>
+    @* 検索結果表示エリア *@
     <div class="panel-heading">検索結果 <span class="badge" id="resultCount"></span><span class='holder'></span></div>
     <div class="table-responsive col-xs-12">
         <table id="searchResult" class="table table-striped table-hover table-sm table-responsible">

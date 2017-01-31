@@ -12,7 +12,11 @@ import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Future}
 
 /**
+  * メモデータアクセスオブジェクト.
+  * DB操作方法を追加したい場合はこのクラスにメソッド追加する.
   * Created on 16/10/24.
+  *
+  * @param dbConfigProvider
   */
 class MemoDao @Inject()(dbConfigProvider: DatabaseConfigProvider) {
 
@@ -24,6 +28,10 @@ class MemoDao @Inject()(dbConfigProvider: DatabaseConfigProvider) {
     ts => new Date(ts.getTime)
   )
 
+  /**
+    * メモテーブル.
+    * @param tag
+    */
   private class MemoTable(tag: Tag) extends Table[Memo](tag, "memo") {
     def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
     def parentId = column[Long]("parent_id")
@@ -140,6 +148,12 @@ class MemoDao @Inject()(dbConfigProvider: DatabaseConfigProvider) {
     )
   }
 
+  /**
+    * favのUPDATE.
+    * @param id
+    * @param fav
+    * @return
+    */
   def updateFav(id: Long, fav: String): Future[Int] = {
     dbConfig.db.run(memos.filter(_.id === id).map(
       m => (
@@ -158,6 +172,4 @@ class MemoDao @Inject()(dbConfigProvider: DatabaseConfigProvider) {
     */
   def delete(id: Long): Future[Int] =
     dbConfig.db.run(memos.filter(_.id === id).delete)
-
-
 }

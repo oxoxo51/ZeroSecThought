@@ -1,6 +1,14 @@
-@*
- * メモ作成画面.
-*@
+@**
+  * メモ作成画面.
+  *
+  * @param memoForm
+  * @param count 操作日に作成済のメモ件数
+  * @param memoList 親メモコンボボックス用
+  * @param request
+  * @param messages
+  * @param webJarAssets
+  * @param flash
+  *@
 @(memoForm: Form[forms.MemoForm], count: Option[Int], memoList: List[models.Memo])(implicit request: RequestHeader, messages: Messages, webJarAssets: WebJarAssets, flash:Flash)
 @import helper._
 @import scala.concurrent.Await
@@ -44,6 +52,7 @@
 	    },1000);
 	});
 </script>
+@*メモ編集フォーム*@
 <div>
 @form(action=routes.EditThoughtMemoController.register()){
     <input type="hidden" name="command" value="@memoForm("command").value">
@@ -96,7 +105,6 @@
                     <textarea class="form-control input-sm" id="@id" name="@name" cols="100" rows="5" @toHtmlArgs(args)>@value</textarea>
                 }
                 <p><span id="inputLength">0</span>文字</p>
-
             </td>
         </tr>
     </table>

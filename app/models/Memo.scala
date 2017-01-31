@@ -4,7 +4,15 @@ import play.api.libs.json._
 import play.api.libs.functional.syntax._
 
 /**
+  * メモエンティティクラス.
   * Created on 16/10/21.
+  *
+  * @param id
+  * @param parentId
+  * @param title
+  * @param content
+  * @param createDate
+  * @param fav
   */
 case class Memo
 (
@@ -15,6 +23,8 @@ case class Memo
   createDate: java.sql.Date,
   fav: String
 )
+
+/* メモエンティティ-JSONの変換 */
 object Memo {
   val sqlDateWrite = Writes.sqlDateWrites("yyyy/MM/dd")
   implicit lazy val memoWrites: Writes[Memo] = (

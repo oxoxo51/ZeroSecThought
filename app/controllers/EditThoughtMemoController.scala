@@ -16,7 +16,12 @@ import scala.concurrent.{Await, Future}
 import scala.concurrent.duration.Duration
 
 /**
+  * メモ編集画面における一連の処理を制御するコントローラー.
   * Created on 16/09/22.
+  *
+  * @param messagesApi
+  * @param dao
+  * @param webJarAssets
   */
 @Singleton
 class EditThoughtMemoController @Inject() (
@@ -27,8 +32,15 @@ class EditThoughtMemoController @Inject() (
 
   val today = new Date(new java.util.Date().getTime())
 
+  /**
+    * 引数で渡されたIDのメモ編集画面を表示する.
+    * 新規の場合はID：0を引数に渡して呼び出す.
+    * @param id
+    * @return
+    */
   def displayEdit(id: Long) = Action.async {
     implicit request =>
+      // CREATE
       if (id==0) {
         Future(Ok(views.html.editThoughtMemo(
           MemoForms.memoForm.fill(
@@ -56,6 +68,11 @@ class EditThoughtMemoController @Inject() (
       }
   }
 
+  /**
+    * メモ登録.
+    * 入力内容に不備がなければDB登録.
+    * @return
+    */
   def register = Action.async {
     implicit request =>
       MemoForms.memoForm.bindFromRequest.fold(

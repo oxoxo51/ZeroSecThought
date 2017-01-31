@@ -14,7 +14,12 @@ import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Future}
 
 /**
+  * 一覧画面における一連の処理を制御するコントローラー.
   * Created on 16/10/14.
+  *
+  * @param messagesApi
+  * @param dao
+  * @param webJarAssets
   */
 class ApplicationController @Inject() (
   val messagesApi: MessagesApi,
@@ -24,6 +29,14 @@ class ApplicationController @Inject() (
 
   val utilToday = new java.util.Date
 
+  /**
+    * ルートアクセス時の処理.
+    * 以下の情報を取得し、一覧画面を表示する.
+    * 【取得内容】
+    * ・セッションに保持された検索条件：検索時に保存されたもの
+    * ・過去1週間、1か月・1年前の日付と日付毎のメモ件数
+    * @return
+    */
   def index = Action.async { implicit request =>
     Logger.debug("***** access index *****")
     // セッションから検索条件取得
@@ -86,10 +99,12 @@ class ApplicationController @Inject() (
     val yearCount = dao.getCount(new java.sql.Date(cal.getTime.getTime))
     monthYearList :+= (sdf.format(cal.getTime), Integer.toString(yearCount))
 
+    // 渡すパラメータをログ出力
     Logger.debug("session:" + conditionTitle + "/"
       + conditionContent + "/" + conditionDateFrom + "/"
       + conditionDateTo + "/" + sortKey + "/"
       + sortOrder + "/" + favChecked)
+    // 一覧画面表示
     Future.successful(Ok(views.html.thoughtMemoList(
       conditionTitle,
       conditionContent,
@@ -103,6 +118,34 @@ class ApplicationController @Inject() (
     )))
   }
 
+  /**
+    * メモ検索.
+    * requestで渡されたJSON形式の検索条件を元に、メモを検索し、
+    * 検索結果をJSONで返却する.
+    * request・responseJSONの形式は以下のとおり.
+    * 【request】
+    * {
+    *   "conditionTitle": conditionTitle,
+    *   "conditionContent": conditionContent,
+    *   "conditionDateFrom": conditionDateFrom,
+    *   "conditionDateTo": conditionDateTo,
+    *   "sortKey": sortKey,
+    *   "sortOrder": sortOrder,
+    *   "favChecked": favChecked
+    * }
+    * 【response】
+    * [
+    *   {
+    *     "id": id,
+    *     "parentId": parentId,
+    *     "title": title,
+    *     "content": content,
+    *     "createDate": createDate,
+    *     "fav": fav
+    *   }
+    * ]
+    * @return 検索結果一覧(JSON)
+    */
   def searchMemo = Action { implicit request =>
     Logger.debug(request.body.asFormUrlEncoded.get.toString)
 
@@ -124,12 +167,15 @@ class ApplicationController @Inject() (
     val sortOrder = Option(request.body.asFormUrlEncoded.get.get("sortOrder").get.head)
     val favChecked = Option(request.body.asFormUrlEncoded.get.get("favChecked").get.head)
 
+    // 検索条件をログ出力
     Logger.debug(conditionTitle + "/" + conditionContent + "/" + conditionDateFrom + "/" + conditionDateTo + "/" + sortKey + "/" + sortOrder + "/" + favChecked)
+    // 検索実行し、結果をJSON形式に変換
     val memos = Await.result(
       dao.findMemos(conditionDateFrom, conditionDateTo, conditionTitle, conditionContent, sortKey, sortOrder, favChecked),
       Duration.Inf)
     val jsonMemos = Json.toJson(memos)
     Logger.debug(jsonMemos.toString)
+    // セッションに検索条件を保存し、検索結果を返す
     Ok(jsonMemos).withSession(
       "conditionTitle" -> conditionTitle.getOrElse("").toString,
       "conditionContent" -> conditionContent.getOrElse("").toString,
@@ -141,7 +187,11 @@ class ApplicationController @Inject() (
     )
   }
 
-
+  /**
+    * メモ削除.
+    * requestで渡されたJSONにセットされたIDのメモを削除する.
+    * @return
+    */
   def deleteMemo = Action { implicit request =>
     Logger.debug(request.body.asFormUrlEncoded.get.toString)
 
@@ -152,6 +202,12 @@ class ApplicationController @Inject() (
     Ok(request.body.asJson.orNull)
   }
 
+  /**
+    * fav更新.
+    * requestで渡されたJSONにセットされたID,更新後のフラグ値を元に
+    * メモを更新する.
+    * @return
+    */
   def updFav = Action { implicit request =>
     Logger.debug(request.body.asFormUrlEncoded.get.toString)
 
