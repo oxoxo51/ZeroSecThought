@@ -1,9 +1,16 @@
+/**
+ * 画面起動時の初期設定.
+ */
 $(function(){
     var tmpConditionTitle = "";
     var tmpConditionContent = "";
     var tmpConditionDateFrom = "";
     var tmpConditionDateTo = "";
 
+    /**
+     * クリアボタン押下イベント.
+     * 検索条件をクリアして検索する.
+     */
     $('#clearCondition').click(function(){
         $('#conditionTitle').val("");
         $('#conditionContent').val("");
@@ -14,6 +21,10 @@ $(function(){
         $('#favCheck').prop('checked', false);
         search();
     });
+    /**
+     * 「今日」ボタン押下イベント.
+     *  検索条件の日付from/toに今日の日付をセットして検索する.
+     */
     $('#setToday').click(function(){
         var today = new Date();
         var dd = today.getDate();
@@ -26,7 +37,8 @@ $(function(){
         $('#conditionDateTo').val(today);
         search();
     });
-    // focusout時、focusin時点と値が変わっている場合のみ検索
+    /* focusout時、focusin時点と値が変わっている場合のみ検索 */
+    /* 検索条件：タイトル */
     $('#conditionTitle').focusin(function(){
         tmpConditionTitle = this.value;
     });
@@ -35,6 +47,7 @@ $(function(){
             search();
         }
     });
+    /* 検索条件：本文 */
     $('#conditionContent').focusin(function(){
         tmpConditionContent = this.value;
     });
@@ -43,6 +56,7 @@ $(function(){
             search();
         }
     });
+    /* 検索条件：日付from/to */
     $('#conditionDateFrom').focusin(function(){
         tmpConditionDateFrom = this.value;
     });
@@ -59,6 +73,7 @@ $(function(){
             search();
         }
     });
+    /* チェックボックス・ラジオボタン：変更と同時に検索 */
     $('#favCheck').change(function(){
         search();
     });
@@ -68,19 +83,96 @@ $(function(){
     $('input[name="sortOrder"]:radio').change(function(){
         search();
     });
+    /**
+     * 画面起動時にラジオボタン・チェックボックスの値設定し検索.
+     * (サーバーでhtml生成時にキャッシュから検索条件が設定される)
+     */
     setRadioVal();
     setFavCheck();
     search();
 });
 
 /**
+ * 削除確認ダイアログ表示.
+ */
+$(document).on('show.bs.modal', '#modalFade', function(){
+    var button = $(event.target);
+    var msg = "「" + String(button.data('name')).replace('<mark>', '').replace('</mark>', '') + "」を削除します。";
+    var modal = $(this);
+    var delId = button.attr('id');
+    // 削除ボタン押下後にIDを渡すため、メッセージのクラスにIDを設定
+    modal.find('#delMsg').removeClass();
+    modal.find('#delMsg').addClass(delId);
+    modal.find('#delMsg').html(msg);
+    modal.find('#delOk').focus();
+});
+
+/**
+ * 削除ダイアログ「削除」ボタン押下イベント.
+ */
+$(document).on('click', '#delOk', function(){
+    // 削除対象IDを取得しjsonにセット
+    var id = $('#delMsg').attr('class')
+    var jsondata = {
+        "id": id
+    };
+    var node = this;
+    $.ajax({
+        url: "/delete",
+        type: 'POST',
+        data: jsondata,
+        success: function(result){
+            // 削除するメモの日付を取得
+            var memoDate = $('button#' + id).parents('td').nextAll('td.memo_date').text();
+            var dateCount = Number($('#cnt_' + memoDate.replace(/\//g, "\\/")).text()) - 1;
+            $('#cnt_' + memoDate.replace(/\//g, "\\/")).html(dateCount);
+            // 行削除
+            $('#resArrCount').html(removeLine(id));
+        }
+    });
+});
+
+/**
+ * 過去日付クリック時イベント.
+ * クリックした日付を検索条件の日付from/toに設定して検索する.
+ */
+$(document).on('click', '.memoCnt', function(){
+    var date = $(this).text().replace(/\//g, '-');
+    $('#conditionDateFrom').val(date);
+    $('#conditionDateTo').val(date);
+    search();
+});
+
+/**
+ * favクリック時イベント.
+ * favの状態と対象のメモIDを取得し、favの状態を更新する.
+ */
+$(document).on('click', '.fav-star', function(){
+    var class_arr = $(this).attr('Class').split(" ");
+    // メモid取得
+    var memo_id = $(this).attr('id').split("fav_")[1];
+    var fav_flg = "0";
+    // fav on/off
+    for (var i = 0; i < class_arr.length; i++) {
+        if (class_arr[i] == 'glyphicon-star-empty') {
+            $(this).removeClass('glyphicon-star-empty');
+            $(this).addClass('glyphicon-star');
+            fav_flg = "1";
+        } else if (class_arr[i] == 'glyphicon-star') {
+            $(this).removeClass('glyphicon-star');
+            $(this).addClass('glyphicon-star-empty');
+            fav_flg = "0";
+        }
+    }
+    upd_fav(memo_id, fav_flg);
+});
+
+/**
  * 検索.
- *
  * 検索条件をサーバーにpostし、検索結果からhtmlを生成しajaxで描画する.
- *
- *
  */
 function search() {
+    // サーバーから検索結果が返されるまで「検索中」イメージ表示
     dispLoading("検索中...");
     var conditionTitle = $('#conditionTitle').val();
     var conditionContent = $('#conditionContent').val();
@@ -89,6 +181,7 @@ function search() {
     var sortKey = getRadioVal('sortKey');
     var sortOrder = getRadioVal('sortOrder');
     var favChecked = getFavCheck();
+    // 検索条件をjsonオブジェクトに設定
     var jsondata = {
         "conditionTitle": conditionTitle,
         "conditionContent": conditionContent,
@@ -105,8 +198,10 @@ function search() {
         complete: function(result){
             resArr = result.responseJSON;
             resCount = resArr.length
+            // レスポンスのJSONから検索結果のHTMLを生成し、描画
             htmlStr = createHtml(resArr, conditionTitle, conditionContent);
             $('#searchResult').html(htmlStr);
+            // 結果件数を画面表示
             $('#resultCount').html("<span id='resArrCount'>" + resCount + "</span><span>件</span>");
             // ページネーションの設定
             $("span.holder").jPages({
@@ -119,11 +214,18 @@ function search() {
                 midRange     : 5,
                 endRange     : 1
             });
+            // 「検索中」イメージを消す
             removeLoading();
         }
     });
 }
+
+/**
+ * fav更新.
+ * 検索結果一覧のfav on/offをサーバーに投げる
+ */
 function upd_fav(id, flag) {
+    // メモID、ON/OFFを渡す
     var jsondata = {
         "memoId": id,
         "favFlg": flag
@@ -142,6 +244,9 @@ function upd_fav(id, flag) {
     });
 }
 
+/**
+ * 「検索中」イメージ表示.
+ */
 function dispLoading(msg) {
     // 画面表示メッセージ
     var dispMsg = "";
@@ -154,11 +259,21 @@ function dispLoading(msg) {
         $('#searchResult').html("<div id='loading'>" + dispMsg + "</div>");
     }
 }
+
+/**
+ * 「検索中」イメージ削除.
+ */
 function removeLoading() {
     $('#loading').remove();
 }
 
+/**
+ * 検索結果一覧HTML作成.
+ * 検索結果のJSONをもとに検索結果一覧のHTMLを作成.
+ * 検索条件タイトル・本文を一覧上でハイライト表示する.
+ */
 function createHtml(resArr, conditionTitle, conditionContent) {
+    // 検索結果一覧ヘッダ部
     var htmlStr = (
             "<thead><tr><th>fav</th><th>タイトル</th><th>内容</th><th>作成日</th><th>削除</th></tr></thead>"
         +   "<tbody id='itemContainer'>"
@@ -239,10 +354,16 @@ function createHtml(resArr, conditionTitle, conditionContent) {
         htmlStr += createHtmlLine(treeArr[n], conditionTitle, conditionContent);
     }
 
+    // 検索結果一覧終了タグ
     htmlStr += "</tbody>";
     return htmlStr;
 }
 
+/**
+ * 検索結果一覧：ライン作成.
+ * ライン単位でHTML作成.
+ * 検索条件タイトル・本文をハイライト表示する.
+ */
 function createHtmlLine(resArrLine, conditionTitle, conditionContent) {
     // 検索条件のタイトル・本文に合致する箇所をmarkする
     var titleRegExp = new RegExp(conditionTitle, "g");
@@ -272,67 +393,13 @@ function createHtmlLine(resArrLine, conditionTitle, conditionContent) {
     );
 }
 
+/**
+ * 行削除.
+ * 渡されたIDの行を検索結果一覧から削除する.
+ */
 function removeLine(id) {
     // 消すライン：削除ボタンのIDから要素特定
     $('button#' + id).parents("tr").remove();
     // 一覧の件数を1件減らす
     $('#resArrCount').html(Number($('#resArrCount').text()) - 1);
 }
-
-$(document).on('show.bs.modal', '#modalFade', function(){
-    var button = $(event.target);
-    var msg = "「" + String(button.data('name')).replace('<mark>', '').replace('</mark>', '') + "」を削除します。";
-    var modal = $(this);
-    var delId = button.attr('id');
-    modal.find('#delMsg').removeClass();
-    modal.find('#delMsg').addClass(delId);
-    modal.find('#delMsg').html(msg);
-    modal.find('#delOk').focus();
-});
-$(document).on('click', '#delOk', function(){
-    var id = $('#delMsg').attr('class')
-    var jsondata = {
-        "id": id
-    };
-    var node = this;
-    $.ajax({
-        url: "/delete",
-        type: 'POST',
-        data: jsondata,
-        success: function(result){
-            // 削除するメモの日付を取得
-            var memoDate = $('button#' + id).parents('td').nextAll('td.memo_date').text();
-            var dateCount = Number($('#cnt_' + memoDate.replace(/\//g, "\\/")).text()) - 1;
-            $('#cnt_' + memoDate.replace(/\//g, "\\/")).html(dateCount);
-            // 行削除
-            $('#resArrCount').html(removeLine(id));
-        }
-    });
-});
-
-$(document).on('click', '.memoCnt', function(){
-    var date = $(this).text().replace(/\//g, '-');
-    $('#conditionDateFrom').val(date);
-    $('#conditionDateTo').val(date);
-    search();
-});
-
-$(document).on('click', '.fav-star', function(){
-    var class_arr = $(this).attr('Class').split(" ");
-    // メモid取得
-    var memo_id = $(this).attr('id').split("fav_")[1];
-    var fav_flg = "0";
-    // fav on/off
-    for (var i = 0; i < class_arr.length; i++) {
-        if (class_arr[i] == 'glyphicon-star-empty') {
-            $(this).removeClass('glyphicon-star-empty');
-            $(this).addClass('glyphicon-star');
-            fav_flg = "1";
-        } else if (class_arr[i] == 'glyphicon-star') {
-            $(this).removeClass('glyphicon-star');
-            $(this).addClass('glyphicon-star-empty');
-            fav_flg = "0";
-        }
-    }
-    upd_fav(memo_id, fav_flg);
-});

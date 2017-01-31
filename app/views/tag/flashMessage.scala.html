@@ -1,3 +1,8 @@
+@**
+  * flashメッセージ表示エリア.
+  * サーバーから渡されたSuccess/Errorメッセージを表示する.
+  *@
+
 @()(implicit request: RequestHeader, messages: Messages, webJarAssets: WebJarAssets)
 @import constant.Constant
 
@@ -7,6 +12,7 @@ $(function() {
     $('.alert').delay(3000).fadeOut(500);
 });
 </script>
+
 @request.flash.get(Constant.MSG_SUCCESS).map {message =>
 <div class="alert alert-success alert-dismissable">
     <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
