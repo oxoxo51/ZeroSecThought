@@ -3,7 +3,7 @@
   * サーバーから渡されたSuccess/Errorメッセージを表示する.
   *@
 
-@()(implicit request: RequestHeader, messages: Messages, webJarAssets: WebJarAssets)
+@(message: Option[String])(implicit request: RequestHeader, messages: Messages, webJarAssets: WebJarAssets)
 @import constant.Constant
 
 <script type="text/javascript">
@@ -13,15 +13,15 @@ $(function() {
 });
 </script>
 
-@request.flash.get(Constant.MSG_SUCCESS).map {message =>
+@request.flash.get(Constant.MSG_SUCCESS).orElse(message).map{msg =>
 <div class="alert alert-success alert-dismissable">
     <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-    <strong>@message</strong>
+    <strong>@msg</strong>
 </div>
 }
-@request.flash.get(Constant.MSG_ERROR).map {message =>
+@request.flash.get(Constant.MSG_ERROR).map{msg =>
 <div class="alert alert-danger alert-dismissable">
     <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-    <strong>@message</strong>
+    <strong>@msg</strong>
 </div>
 }
