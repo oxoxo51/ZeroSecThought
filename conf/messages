@@ -2,4 +2,4 @@ error.notfound = レコードがありません。
 error.invalid = 入力に不備があります。エラーの内容を確認してください。
 success.create = 「{0}」 を作成しました。
 success.update = 「{0}」 を更新しました。
-index.info = 本日メモを{0}件書いています。1日10件はメモを書きましょう。
+index.info = <a href="/edit/0">本日メモを{0}件書いています。1日10件はメモを書きましょう。</a>
