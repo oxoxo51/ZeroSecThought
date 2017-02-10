@@ -11,7 +11,7 @@
   * @param messages
   * @param webJarAssets
   *@
-@(title: String)(header: Html)(content: Html)(implicit request: RequestHeader, messages: Messages, webJarAssets: WebJarAssets)
+@(title: String, message: Option[String])(header: Html)(content: Html)(implicit request: RequestHeader, messages: Messages, webJarAssets: WebJarAssets)
 
 <!DOCTYPE html>
 <html lang="en">
@@ -30,7 +30,7 @@
         @* ページヘッダ *@
         @header
         @* メッセージ表示部分 *@
-        @tag.flashMessage()
+        @tag.flashMessage(message)
         @* 各ページHTML*@
         @content
     </body>

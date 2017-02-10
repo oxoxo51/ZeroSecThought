@@ -4,11 +4,12 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import javax.inject.Inject
 
+import constant.Constant
 import models.daos.MemoDao
 import play.api.Logger
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.libs.json.Json
-import play.api.mvc.{Action, Controller}
+import play.api.mvc.{Action, Controller, Flash}
 
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Future}
@@ -78,16 +79,26 @@ class ApplicationController @Inject() (
       case Some (s) => Some(s)
     }
 
+    var todayMemoCount = 0
+
     val sdf = new SimpleDateFormat("yyyy/MM/dd")
     var weekMemoList = List.empty[(String, String)]
-    // 1週間分ループを回し、日付＋日付のmem0件数を取得しListに詰める
+    // 1週間分ループを回し、日付＋日付のmemo件数を取得しListに詰める
     for (i <- 0 to 6) {
       val cal = Calendar.getInstance
       cal.setTime(utilToday)
       cal.add(Calendar.DAY_OF_MONTH, i-6)
       val count = dao.getCount(new java.sql.Date(cal.getTime.getTime))
       weekMemoList :+= (sdf.format(cal.getTime), Integer.toString(count))
+      if (i == 6) todayMemoCount = count
     }
+
+    // 本日のメモ件数:10件未満の場合はメッセージ表示する
+    val message: Option[String] = {
+      if (todayMemoCount < 10) Some(Messages("index.info", todayMemoCount))
+      else None
+    }
+
     var monthYearList = List.empty[(String, String)]
     val cal = Calendar.getInstance
     cal.setTime(utilToday)
@@ -114,7 +125,8 @@ class ApplicationController @Inject() (
       sortOrder,
       favChecked,
       weekMemoList,
-      monthYearList
+      monthYearList,
+      message
     )))
   }
 
