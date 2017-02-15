@@ -2,17 +2,18 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-GET  /             controllers.ApplicationController.index
-POST /search       controllers.ApplicationController.searchMemo
-POST /delete       controllers.ApplicationController.deleteMemo
-POST /updfav       controllers.ApplicationController.updFav
+GET  /                           controllers.ApplicationController.index
+POST /search                     controllers.ApplicationController.searchMemo
+POST /delete                     controllers.ApplicationController.deleteMemo
+POST /updfav                     controllers.ApplicationController.updFav
 
-GET  /edit/:id     controllers.EditThoughtMemoController.displayEdit(id: Long)
-POST /register     controllers.EditThoughtMemoController.register
+GET  /edit/:id                   controllers.EditThoughtMemoController.displayEdit(id: Long)
+GET  /basedOnTemplate/:parentId  controllers.EditThoughtMemoController.displayEditWithTemplate(parentId: Long)
+POST /register                   controllers.EditThoughtMemoController.register
 
-GET  /template/edit/:id controllers.EditMemoTemplateController.displayEdit(id: Long)
-POST /template/register controllers.EditMemoTemplateController.register
+GET  /template/edit/:id          controllers.EditMemoTemplateController.displayEdit(id: Long)
+POST /template/register          controllers.EditMemoTemplateController.register
 
 # Map static resources from the /public folder to the /assets URL path
-GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
-GET     /webjars/*file              controllers.WebJarAssets.at(file)
+GET  /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
+GET  /webjars/*file              controllers.WebJarAssets.at(file)

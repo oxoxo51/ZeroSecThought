@@ -31,6 +31,11 @@ class EditMemoTemplateController @Inject() (
   implicit val webJarAssets: WebJarAssets)
   extends Controller with I18nSupport {
 
+  /**
+    * display edit template screen.
+    * @param id
+    * @return
+    */
   def displayEdit(id: Long) = Action.async {
     implicit request =>
       // CREATE
@@ -61,6 +66,10 @@ class EditMemoTemplateController @Inject() (
       }
   }
 
+  /**
+    * register template.
+    * @return
+    */
   def register = Action.async {
     implicit request =>
       MemoTemplateForms.memoTemplateForm.bindFromRequest.fold(
