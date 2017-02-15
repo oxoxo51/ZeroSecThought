@@ -2,3 +2,8 @@ error.notfound = レコードがありません。
 error.invalid = 入力に不備があります。エラーの内容を確認してください。
 success.create = 「{0}」 を作成しました。
 success.update = 「{0}」 を更新しました。
+
+#screen name
+screen.memolist = メモ一覧
+screen.editmemo = メモ作成・編集画面
+screen.edittemplate = テンプレート作成・編集画面

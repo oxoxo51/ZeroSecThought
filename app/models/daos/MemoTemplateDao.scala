@@ -1,9 +1,11 @@
-package models
+package models.daos
 
 import javax.inject.Inject
 
+import models.{Memo, MemoTemplate}
 import play.api.db.slick.DatabaseConfigProvider
 import slick.driver.JdbcProfile
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
 import scala.concurrent.Future
 
@@ -22,12 +24,12 @@ class MemoTemplateDao @Inject()(dbConfigProvider: DatabaseConfigProvider) {
     * memo tamplate table.
     * @param tag
     */
-  private class MemoTemplateTable(tag: Tag) extends Table[MemoTemplate](tag, "memotemplate") {
+  private class MemoTemplateTable(tag: Tag) extends Table[MemoTemplate](tag, "memoTemplate") {
     def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
-    def parentId = column[Long]("parentId")
+    def parentId = column[Long]("parent_id")
     def title = column[String]("title")
     def content = column[String]("content")
-    def * = (id.?, parentId.?m title, content) <> ((MemoTemplate.apply _).tupled, Memo.unapply)
+    def * = (id.?, parentId.?, title, content) <> ((MemoTemplate.apply _).tupled, MemoTemplate.unapply)
   }
 
   private val memoTemplates = TableQuery[MemoTemplateTable]
@@ -47,6 +49,10 @@ class MemoTemplateDao @Inject()(dbConfigProvider: DatabaseConfigProvider) {
   def byId(id: Long): Future[Option[MemoTemplate]] =
     dbConfig.db.run(memoTemplates.filter(_.id === id).result.headOption)
 
+  def create(memoTemplate: MemoTemplate): Future[Int] = {
+    dbConfig.db.run(memoTemplates += memoTemplate)
+  }
+
   /**
     * update.
     * @param memoTemplate
@@ -59,12 +65,11 @@ class MemoTemplateDao @Inject()(dbConfigProvider: DatabaseConfigProvider) {
         m.title,
         m.content
         )
-      ).update(
-        // maybe parentId can't be None
-        memoTemplate.parentId.getOrElse(0),
-        memoTemplate.title,
-        memoTemplate.content
-        )
+    ).update(
+      // maybe parentId can't be None
+      memoTemplate.parentId.getOrElse(0),
+      memoTemplate.title,
+      memoTemplate.content
       )
     )
   }

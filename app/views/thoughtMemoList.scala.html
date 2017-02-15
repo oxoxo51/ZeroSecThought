@@ -23,8 +23,10 @@
   weekMemoList: List[(String, String)],
   monthYearList: List[(String, String)])(implicit request: RequestHeader, messages: Messages, webJarAssets: WebJarAssets)
 @import helper._
+@import play.api.i18n.Messages
 
-@main("メモ一覧"){
+
+@main(Messages("screen.memolist")){
 <div class="page-header">
     <h3>メモ一覧</h3><small><a href="@routes.EditThoughtMemoController.displayEdit(0)">新規作成</a></small>
 </div>

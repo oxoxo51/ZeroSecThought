@@ -13,8 +13,9 @@
 @import helper._
 @import scala.concurrent.Await
 @import scala.concurrent.duration.Duration
+@import play.api.i18n.Messages
 
-@main("メモ作成・編集画面"){
+@main(Messages("screen.editmemo")){
 <div class="page-header">
     @if(memoForm("command").value.getOrElse("")=="C") {
     <h3>メモ作成</h3>
