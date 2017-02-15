@@ -21,12 +21,13 @@
   iniSortOrder: Option[String],
   iniFavChecked: Option[String],
   weekMemoList: List[(String, String)],
-  monthYearList: List[(String, String)])(implicit request: RequestHeader, messages: Messages, webJarAssets: WebJarAssets)
+  monthYearList: List[(String, String)],
+  message: Option[String])(implicit request: RequestHeader, messages: Messages, webJarAssets: WebJarAssets)
 @import helper._
 @import play.api.i18n.Messages
 
 
-@main(Messages("screen.memolist")){
+@main(Messages("screen.memolist"), message){
 <div class="page-header">
     <h3>メモ一覧</h3><small><a href="@routes.EditThoughtMemoController.displayEdit(0)">新規作成</a></small>
 </div>

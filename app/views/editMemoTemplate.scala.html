@@ -2,7 +2,7 @@
 @import helper._
 @import play.api.i18n.Messages
 
-@main(Messages("screen.edittemplate")){
+@main(Messages("screen.edittemplate"), None){
 <div class="page-header">
     @if(templateForm("command").value.getOrElse("")=="C") {
         <h3>テンプレート作成</h3>
