@@ -5,7 +5,7 @@ import java.util.Calendar
 import javax.inject.Inject
 
 import constant.Constant
-import models.daos.MemoDao
+import models.daos.{MemoDao, MemoTemplateDao}
 import play.api.Logger
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.libs.json.Json
@@ -25,6 +25,7 @@ import scala.concurrent.{Await, Future}
 class ApplicationController @Inject() (
   val messagesApi: MessagesApi,
   dao: MemoDao,
+  templateDao: MemoTemplateDao,
   implicit val webJarAssets: WebJarAssets)
   extends Controller with I18nSupport {
 
@@ -93,6 +94,10 @@ class ApplicationController @Inject() (
       if (i == 6) todayMemoCount = count
     }
 
+    // テンプレートのIDとタイトルをリストに詰める
+    val templates: List[(Long, String)] = (Await.result(templateDao.getMemoTemplates(), Duration.Inf)).map(
+      template => (template.id.get, template.title)
+    )
     // 本日のメモ件数:10件未満の場合はメッセージ表示する
     val message: Option[String] = {
       if (todayMemoCount < 10) Some(Messages("index.info", todayMemoCount))
@@ -126,6 +131,7 @@ class ApplicationController @Inject() (
       favChecked,
       weekMemoList,
       monthYearList,
+      templates,
       message
     )))
   }
