@@ -1,0 +1,60 @@
+@(templateForm: Form[forms.MemoTemplateForm], memoList: List[models.Memo])(implicit request: RequestHeader, messages: Messages, webJarAssets: WebJarAssets, flash: Flash)
+@import helper._
+@import play.api.i18n.Messages
+
+@main(Messages("screen.edittemplate"), None){
+<div class="page-header">
+    @if(templateForm("command").value.getOrElse("")=="C") {
+        <h3>テンプレート作成</h3>
+    }else{
+        <h3>テンプレート編集</h3>
+    }
+</div>
+}{
+<div>
+    @form(action=routes.EditMemoTemplateController.register()){
+    <input type="hidden" name="command" value="@templateForm("command").value">
+    <input type="hidden" name="db.id" value="@templateForm("db.id").value">
+    <table>
+        <tr valign="top">
+            <td>
+                @(inputText(
+                templateForm("db.title"),
+                '_label -> "タイトル",
+                '_help -> " ",
+                'size -> 30,
+                'class ->"form-control input-sm"
+                ))
+            </td>
+            <td>
+                @{
+                var optionSeq: Seq[(String, String)] = Seq(("0", ""))
+                memoList.foreach(memo => (optionSeq :+= (memo.id.get.toString, memo.title)))
+                select(
+                templateForm("db.parentId"),
+                options = optionSeq,
+                '_label -> "親メモ",
+                '_help -> " ",
+                '_showInfos -> false,
+                'class ->"form-control input-sm"
+                )
+                }
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                @input(
+                templateForm("db.content"),
+                '_label -> "本文",
+                '_showInfos -> false,
+                '_help -> ""
+                ) {(id, name, value, args)  =>
+                <textarea class="form-control input-sm" id="@id" name="@name" cols="100" rows="5" @toHtmlArgs(args)>@value</textarea>
+                }
+            </td>
+        </tr>
+    </table>
+    <input type="submit" class="btn btn-default btn-sm" value="登録"></input>
+    }
+</div>
+}

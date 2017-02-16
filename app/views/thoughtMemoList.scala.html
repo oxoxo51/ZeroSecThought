@@ -9,6 +9,7 @@
   * @param iniFavChecked
   * @param weekMemoList 過去1週間の日付とメモ件数のリスト
   * @param monthYearList 1か月前、1年前の日付とメモ件数のリスト
+  * @param templates テンプレートのIDとタイトルのリスト
   * @param request
   * @param messages
   * @param webJarAssets
@@ -22,12 +23,15 @@
   iniFavChecked: Option[String],
   weekMemoList: List[(String, String)],
   monthYearList: List[(String, String)],
+  templates: List[(Long, String)],
   message: Option[String])(implicit request: RequestHeader, messages: Messages, webJarAssets: WebJarAssets)
 @import helper._
+@import play.api.i18n.Messages
 
-@main("メモ一覧", message){
+
+@main(Messages("screen.memolist"), message){
 <div class="page-header">
-    <h3>メモ一覧</h3><small><a href="@routes.EditThoughtMemoController.displayEdit(0)">新規作成</a></small>
+    <h3>メモ一覧</h3>
 </div>
 }{
 <script type="text/javascript">
@@ -86,12 +90,30 @@ function getFavCheck() {
 </script>
 @* 外だしJavaScript *@
 <script src="@routes.Assets.versioned("javascripts/searchMemo.js")" type="text/javascript"></script>
+@* 新規作成メニュー*@
+<div class="panel panel-group panel-info row" id="createMemoPanel">
+  <div class="panel-heading">
+    <a href="@routes.EditThoughtMemoController.displayEdit(0)">新規作成</a>
+    /
+    <a data-toggle="collapse" href="#dispCreateMenu">テンプレートを元に作成</a>
+  </div>
+  @* テンプレート一覧表示エリア *@
+  <div class="panel-body panel-collapse collapse" id="dispCreateMenu">
+    @{
+      var templateStr = "<ul>"
+      templates.foreach{ case (i, j) =>
+        templateStr += ("<li><a href='" + routes.EditThoughtMemoController.displayEditWithTemplate(i) + "'>" + j + "</a></li>")
+      }
+      Html(templateStr + "</ul>")
+    }
+  </div>
+</div>
 @* 検索条件パネル *@
 <div class="panel panel-group panel-info row" id="menuPanel">
     @* パネルタイトル *@
     <div class="panel-heading"><a data-toggle="collapse" href="#dispMenu">表示メニュー</a></div>
     @* 表示メニュー（開閉可能） *@
-    <div class="panel-body panel-collapse collapse in" id="dispMenu">
+    <div class="panel-body panel-collapse collapse" id="dispMenu">
         @* 過去1週間のメモ件数エリア *@
         <div class="col-md-3 col-sm-6">
             <div class="panel panel-default">

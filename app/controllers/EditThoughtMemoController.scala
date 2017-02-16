@@ -4,11 +4,11 @@ import java.sql.Date
 import javax.inject.{Inject, Singleton}
 
 import constant.Constant
-import forms.{MemoForms, MemoForm}
+import forms.{MemoForm, MemoForms}
 import models.Memo
-import models.daos.MemoDao
+import models.daos.{MemoDao, MemoTemplateDao}
 import play.api.Logger
-import play.api.i18n.{Messages, I18nSupport, MessagesApi}
+import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, Controller}
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
@@ -27,6 +27,7 @@ import scala.concurrent.duration.Duration
 class EditThoughtMemoController @Inject() (
   val messagesApi: MessagesApi,
   dao: MemoDao,
+  templateDao: MemoTemplateDao,
   implicit val webJarAssets: WebJarAssets)
   extends Controller with I18nSupport {
 
@@ -66,6 +67,31 @@ class EditThoughtMemoController @Inject() (
           }
         )
       }
+  }
+
+  /**
+    * 引数で渡されたIDのテンプレートを元にメモ編集画面を表示する.
+    * @param templateId
+    * @return
+    */
+  def displayEditWithTemplate(templateId: Long) = Action.async {
+    implicit request =>
+      templateDao.byId(templateId).map(
+        option => option match {
+          case Some(template) =>
+            Logger.debug(template.id + "/" + template.title + "/" + template.content)
+            Ok(views.html.editThoughtMemo(
+              MemoForms.memoForm.fill(
+                MemoForm(Some("C"), new Memo(None, template.parentId, template.title, template.content, today, "0"))
+              ), Option(dao.getCount(today)),
+              Await.result(dao.getMemos, Duration.Inf)
+            ))
+          case None =>
+            // 見つからない場合（IDをURLに適当に指定した場合）
+            Redirect(routes.ApplicationController.index())
+              .flashing(Constant.MSG_ERROR -> Messages("error.notfound"))
+        }
+      )
   }
 
   /**
