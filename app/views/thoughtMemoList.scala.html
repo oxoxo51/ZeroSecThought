@@ -102,14 +102,14 @@ function getFavCheck() {
   @* テンプレート一覧表示エリア *@
   <div class="panel-body panel-collapse collapse" id="dispCreateMenu">
     @{
-      var templateStr = "<ul>"
+      var templateStr = "<table>"
       templates.foreach{ case (i, j) =>
-        templateStr += ("<li><a href='" + routes.EditThoughtMemoController.displayEditWithTemplate(i) + "'>" + j + "</a>"
-          + "[<a href='" + routes.EditMemoTemplateController.displayEdit(i) + "'>編集</a>]"
-          + "<button class='templateRow btn btn-default btn-xs' id='template_" + i + "' data-toggle='modal' data-target='#modalTemplateFade' data-name='" + j + "'>×</button>"
-          + "</li>")
+        templateStr += ("<tr><td><a href='" + routes.EditThoughtMemoController.displayEditWithTemplate(i) + "'>" + j + "</a></td>"
+          + "<td>[<a href='" + routes.EditMemoTemplateController.displayEdit(i) + "'>編集</a>]</td>"
+          + "<td><button class='templateRow btn btn-default btn-xs' id='template_" + i + "' data-toggle='modal' data-target='#modalTemplateFade' data-name='" + j + "'>×</button></td>"
+          + "</tr>")
       }
-      Html(templateStr + "</ul>")
+      Html(templateStr + "</table>")
     }
   </div>
 </div>
