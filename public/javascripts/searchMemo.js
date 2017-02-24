@@ -133,6 +133,42 @@ $(document).on('click', '#delOk', function(){
 });
 
 /**
+ * テンプレート削除確認ダイアログ表示.
+ */
+$(document).on('show.bs.modal', '#modalTemplateFade', function(){
+    var button = $(event.target);
+    var msg = "「テンプレート：" + button.data('name') + "」を削除します。";
+    var modal = $(this);
+    var delId = button.attr('id').split("template_")[1];
+    // 削除ボタン押下後にIDを渡すため、メッセージのクラスにIDを設定
+    modal.find('#delTemplateMsg').removeClass();
+    modal.find('#delTemplateMsg').addClass(delId);
+    modal.find('#delTemplateMsg').html(msg);
+    modal.find('#delTemplateOk').focus();
+});
+
+/**
+ * テンプレート削除ダイアログ「削除」ボタン押下イベント.
+ */
+$(document).on('click', '#delTemplateOk', function(){
+    // 削除対象IDを取得しjsonにセット
+    var id = $('#delTemplateMsg').attr('class')
+    var jsondata = {
+        "id": id
+    };
+    var node = this;
+    $.ajax({
+        url: "/deleteTemplate",
+        type: 'POST',
+        data: jsondata,
+        success: function(result){
+            // 行削除
+            // 消すライン：削除ボタンのIDから要素特定
+            $('button#template_' + id).parents("li").remove();
+        }
+    });
+});
+/**
  * 過去日付クリック時イベント.
  * クリックした日付を検索条件の日付from/toに設定して検索する.
  */
