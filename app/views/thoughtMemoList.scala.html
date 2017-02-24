@@ -96,13 +96,18 @@ function getFavCheck() {
     <a href="@routes.EditThoughtMemoController.displayEdit(0)">新規作成</a>
     /
     <a data-toggle="collapse" href="#dispCreateMenu">テンプレートを元に作成</a>
+    /
+    <a href="@routes.EditMemoTemplateController.displayEdit(0)">テンプレート作成</a>
   </div>
   @* テンプレート一覧表示エリア *@
   <div class="panel-body panel-collapse collapse" id="dispCreateMenu">
     @{
       var templateStr = "<ul>"
       templates.foreach{ case (i, j) =>
-        templateStr += ("<li><a href='" + routes.EditThoughtMemoController.displayEditWithTemplate(i) + "'>" + j + "</a></li>")
+        templateStr += ("<li><a href='" + routes.EditThoughtMemoController.displayEditWithTemplate(i) + "'>" + j + "</a>"
+          + "[<a href='" + routes.EditMemoTemplateController.displayEdit(i) + "'>編集</a>]"
+          + "<button class='templateRow btn btn-default btn-xs' id='template_" + i + "' data-toggle='modal' data-target='#modalTemplateFade' data-name='" + j + "'>×</button>"
+          + "</li>")
       }
       Html(templateStr + "</ul>")
     }
@@ -234,7 +239,19 @@ function getFavCheck() {
             </div>
         </div>
     </div>
-    @* 検索結果表示エリア *@
+    <div class="modal fade" id="modalTemplateFade" tabindex="-1">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <!-- 削除確認メッセージ -->
+                    <p id="delTemplateMsg"></p>
+                    <button id="delTemplateOk" data-dismiss="modal">OK</button>
+                    <button id="delTemplateCancel" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+     @* 検索結果表示エリア *@
     <div class="panel-heading">検索結果 <span class="badge" id="resultCount"></span><span class='holder'></span></div>
     <div class="table-responsive col-xs-12">
         <table id="searchResult" class="table table-striped table-hover table-sm table-responsible">

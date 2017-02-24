@@ -20,6 +20,7 @@ import scala.concurrent.{Await, Future}
   *
   * @param messagesApi
   * @param dao
+  * @param templateDao
   * @param webJarAssets
   */
 class ApplicationController @Inject() (
@@ -216,6 +217,21 @@ class ApplicationController @Inject() (
     val id = request.body.asFormUrlEncoded.get.get("id").get.head
     val num = Await.result(
       dao.delete(id.toLong),
+      Duration.Inf)
+    Ok(request.body.asJson.orNull)
+  }
+
+  /**
+    * テンプレート削除.
+    * requestで渡されたJSONにセットされたIDのテンプレートを削除する.
+    * @return
+    */
+  def deleteTemplate = Action { implicit request =>
+    Logger.debug(request.body.asFormUrlEncoded.get.toString)
+
+    val id = request.body.asFormUrlEncoded.get.get("id").get.head
+    val num = Await.result(
+      templateDao.delete(id.toLong),
       Duration.Inf)
     Ok(request.body.asJson.orNull)
   }
