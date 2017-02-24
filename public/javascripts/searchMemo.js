@@ -8,6 +8,18 @@ $(function(){
     var tmpConditionDateTo = "";
 
     /**
+     * 「テンプレートを元に作成」ボタン押下イベント.
+     *  選択時のactive化、メニュー閉じ
+     */
+    $('#basedTemplate,#openDispMenu').click(function(){
+        if($(this).parents("li").attr('class')) {
+            $(this).parents("li").removeClass();
+        } else {
+            $(this).parents("li").addClass("active");
+        }
+        $("#navbarMenu").removeClass("in");
+    });
+     /**
      * クリアボタン押下イベント.
      * 検索条件をクリアして検索する.
      */

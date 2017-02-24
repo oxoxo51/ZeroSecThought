@@ -11,7 +11,7 @@
   * @param messages
   * @param webJarAssets
   *@
-@(title: String, message: Option[String])(header: Html)(content: Html)(implicit request: RequestHeader, messages: Messages, webJarAssets: WebJarAssets)
+@(title: String)(content: Html)(implicit request: RequestHeader, messages: Messages, webJarAssets: WebJarAssets)
 
 <!DOCTYPE html>
 <html lang="en">
@@ -27,10 +27,6 @@
         <script type='text/javascript' src='@routes.Assets.versioned("javascripts/jPages.js")'></script>
     </head>
     <body>
-        @* ページヘッダ *@
-        @header
-        @* メッセージ表示部分 *@
-        @tag.flashMessage(message)
         @* 各ページHTML*@
         @content
     </body>

@@ -45,3 +45,13 @@ body {
     background-position: center top;
     background-repeat: no-repeat;
 }
+
+body{
+    padding-top:70px;
+}
+
+.alert{
+    position:absolute;
+    right:0px;
+    top:3px;
+}

@@ -2,15 +2,22 @@
 @import helper._
 @import play.api.i18n.Messages
 
-@main(Messages("screen.edittemplate"), None){
-<div class="page-header">
-    @if(templateForm("command").value.getOrElse("")=="C") {
-        <h3>テンプレート作成</h3>
-    }else{
-        <h3>テンプレート編集</h3>
-    }
-</div>
-}{
+@main(Messages("screen.edittemplate")){
+@* ナビゲーション *@
+<nav class="navbar navbar-default navbar-fixed-top">
+    @tag.flashMessage(None)
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <p class="navbar-brand">
+                @if(templateForm("command").value.getOrElse("")=="C") {
+                    テンプレート作成
+                }else{
+                    テンプレート編集
+                }
+            </p>
+        </div>
+    </div>
+</nav>
 <div>
     @form(action=routes.EditMemoTemplateController.register()){
     <input type="hidden" name="command" value="@templateForm("command").value">
