@@ -29,11 +29,7 @@
 @import play.api.i18n.Messages
 
 
-@main(Messages("screen.memolist"), message){
-<div class="page-header">
-    <h3>メモ一覧</h3>
-</div>
-}{
+@main(Messages("screen.memolist")){
 <script type="text/javascript">
 /**
   * ラジオボタン値セットイベント.
@@ -90,15 +86,30 @@ function getFavCheck() {
 </script>
 @* 外だしJavaScript *@
 <script src="@routes.Assets.versioned("javascripts/searchMemo.js")" type="text/javascript"></script>
-@* 新規作成メニュー*@
-<div class="panel panel-group panel-info row" id="createMemoPanel">
-  <div class="panel-heading">
-    <a href="@routes.EditThoughtMemoController.displayEdit(0)">新規作成</a>
-    /
-    <a data-toggle="collapse" href="#dispCreateMenu">テンプレートを元に作成</a>
-    /
-    <a href="@routes.EditMemoTemplateController.displayEdit(0)">テンプレート作成</a>
+@* ナビゲーション *@
+<nav class="navbar navbar-default navbar-fixed-top">
+  @tag.flashMessage(message)
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbarMenu">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <p class="navbar-brand">メモ一覧</p>
+    </div>
+    <div class="collapse navbar-collapse" id="navbarMenu">
+      <ul class="nav navbar-nav">
+        <li><a href="@routes.EditThoughtMemoController.displayEdit(0)">新規作成</a></li>
+        <li><a id="basedTemplate" data-toggle="collapse" href="#dispCreateMenu">テンプレートを元に作成</a></li>
+        <li><a href="@routes.EditMemoTemplateController.displayEdit(0)">テンプレート作成</a></li>
+        <li><a id="openDispMenu" data-toggle="collapse" href="#dispMenu">表示メニュー</a></li>
+      </ul>
+    </div>
   </div>
+</nav>
+@* 新規作成メニュー*@
   @* テンプレート一覧表示エリア *@
   <div class="panel-body panel-collapse collapse" id="dispCreateMenu">
     @{
@@ -114,112 +125,109 @@ function getFavCheck() {
   </div>
 </div>
 @* 検索条件パネル *@
-<div class="panel panel-group panel-info row" id="menuPanel">
-    @* パネルタイトル *@
-    <div class="panel-heading"><a data-toggle="collapse" href="#dispMenu">表示メニュー</a></div>
-    @* 表示メニュー（開閉可能） *@
-    <div class="panel-body panel-collapse collapse" id="dispMenu">
-        @* 過去1週間のメモ件数エリア *@
-        <div class="col-md-3 col-sm-6">
-            <div class="panel panel-default">
-                <div class="panel-heading">過去1週間</div>
-                <div class="panel-body" id="lastWeekPanel">
-                    @* 今日含めた過去1週間分のメモ件数を取得しHTMLに表示する *@
-                    @{
-                        var weekStr = ""
-                        weekMemoList.foreach{ case (i, j) =>
-                            weekStr += ("<div class='row'><div class='col-xs-6'><button class='btn btn-link btn-xs memoCnt'>" + i + "</button></div><div class='col-xs-6'><span class='badge'><span id='cnt_" + i + "'>" + j + "</span>件</span></div></div>")
-                        }
-                        Html(weekStr)
+@* 表示メニュー（開閉可能） *@
+<div class="panel-body panel-collapse collapse" id="dispMenu">
+  @* パネルタイトル *@
+    @* 過去1週間のメモ件数エリア *@
+    <div class="col-md-3 col-sm-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">過去1週間</div>
+            <div class="panel-body" id="lastWeekPanel">
+                @* 今日含めた過去1週間分のメモ件数を取得しHTMLに表示する *@
+                @{
+                    var weekStr = ""
+                    weekMemoList.foreach{ case (i, j) =>
+                        weekStr += ("<div class='row'><div class='col-xs-6'><button class='btn btn-link btn-xs memoCnt'>" + i + "</button></div><div class='col-xs-6'><span class='badge'><span id='cnt_" + i + "'>" + j + "</span>件</span></div></div>")
                     }
-                </div>
+                    Html(weekStr)
+                }
             </div>
         </div>
-        @* 1か月前・1年前のメモ件数エリア *@
-        <div class="col-md-3 col-sm-6">
-            <div class="panel panel-default">
-                <div class="panel-heading">1か月前・1年前</div>
-                <div class="panel-body" id="lastMonthYearPanel">
-                    @* 1か月前、1年前のメモ件数を取得しHTMLに表示する *@
-                    @{
-                        var monthYearStr = ""
-                        monthYearList.foreach{ case (i, j) =>
-                            monthYearStr += ("<div class='row'><div class='col-xs-6'><button class='btn btn-link btn-xs memoCnt'>" + i + "</button></div><div class='col-xs-6'><span class='badge'><span id='cnt_" + i + "'>" + j + "</span>件</span></div></div>")
-                        }
-                        Html(monthYearStr)
+    </div>
+    @* 1か月前・1年前のメモ件数エリア *@
+    <div class="col-md-3 col-sm-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">1か月前・1年前</div>
+            <div class="panel-body" id="lastMonthYearPanel">
+                @* 1か月前、1年前のメモ件数を取得しHTMLに表示する *@
+                @{
+                    var monthYearStr = ""
+                    monthYearList.foreach{ case (i, j) =>
+                        monthYearStr += ("<div class='row'><div class='col-xs-6'><button class='btn btn-link btn-xs memoCnt'>" + i + "</button></div><div class='col-xs-6'><span class='badge'><span id='cnt_" + i + "'>" + j + "</span>件</span></div></div>")
                     }
-                </div>
+                    Html(monthYearStr)
+                }
             </div>
         </div>
-        @* 検索条件個別指定エリア *@
-        <div class="col-md-6 col-sm-12">
-            <div class="panel panel-default">
-                <div class="panel-heading">検索条件</div>
-                <div class="panel-body" id="conditionPanel">
-                        <table>
-                            <tr>
-                                <td>
-                                    <label for="conditionTitle">タイトル</label>
-                                    <input id="conditionTitle" type="text" class="form-control input-sm"
-                                           value="@iniConTitle.getOrElse("")">
-                                </td>
-                                <td></td>
-                                <td>
-                                    <label for="conditionContent">本文</label>
-                                    <input id="conditionContent" type="text" class="form-control input-sm"
-                                           value="@iniConContent.getOrElse("")">
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <label for="conditionDateFrom">日付</label><button class="btn btn-link btn-xs" id="setToday">今日</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <input id="conditionDateFrom" type="date" class="form-control input-sm"
-                                           value="@iniConDateFrom.getOrElse("")">
-                                </td>
-                                <td>
-                                    〜
-                                </td>
-                                <td>
-                                    <input id="conditionDateTo" type="date" class="form-control input-sm"
-                                           value="@iniConDateTo.getOrElse("")">
-                                </td>
-                            </tr>
-                            <tr>
-                                <td colspan="2"><label>ソートキー</label></td>
-                                <td><label>ソート順</label></td>
-                            </tr>
-                            <tr>
-                                <td colspan="2">
-                                    <label class="radio-inline">
-                                        <input type="radio" name="sortKey" value="1">タイトル
-                                    </label>
-                                    <label class="radio-inline">
-                                        <input type="radio" name="sortKey" value="2">日付
-                                    </label>
-                                </td>
-                                <td>
-                                    <label class="radio-inline">
-                                        <input type="radio" name="sortOrder" value="1">昇順
-                                    </label>
-                                    <label class="radio-inline">
-                                        <input type="radio" name="sortOrder" value="2">降順
-                                    </label>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td colspan=2>
-                                    <input id="favCheck" type="checkbox"><label for="favCheck">favのみ</label>
-                                </td>
-                                <td>
-                                    <button id="clearCondition" class="btn btn-default btn-sm">クリア</button>
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
+    </div>
+    @* 検索条件個別指定エリア *@
+    <div class="col-md-6 col-sm-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">検索条件</div>
+            <div class="panel-body" id="conditionPanel">
+                    <table>
+                        <tr>
+                            <td>
+                                <label for="conditionTitle">タイトル</label>
+                                <input id="conditionTitle" type="text" class="form-control input-sm"
+                                       value="@iniConTitle.getOrElse("")">
+                            </td>
+                            <td></td>
+                            <td>
+                                <label for="conditionContent">本文</label>
+                                <input id="conditionContent" type="text" class="form-control input-sm"
+                                       value="@iniConContent.getOrElse("")">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label for="conditionDateFrom">日付</label><button class="btn btn-link btn-xs" id="setToday">今日</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input id="conditionDateFrom" type="date" class="form-control input-sm"
+                                       value="@iniConDateFrom.getOrElse("")">
+                            </td>
+                            <td>
+                                〜
+                            </td>
+                            <td>
+                                <input id="conditionDateTo" type="date" class="form-control input-sm"
+                                       value="@iniConDateTo.getOrElse("")">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2"><label>ソートキー</label></td>
+                            <td><label>ソート順</label></td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <label class="radio-inline">
+                                    <input type="radio" name="sortKey" value="1">タイトル
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" name="sortKey" value="2">日付
+                                </label>
+                            </td>
+                            <td>
+                                <label class="radio-inline">
+                                    <input type="radio" name="sortOrder" value="1">昇順
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" name="sortOrder" value="2">降順
+                                </label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan=2>
+                                <input id="favCheck" type="checkbox"><label for="favCheck">favのみ</label>
+                            </td>
+                            <td>
+                                <button id="clearCondition" class="btn btn-default btn-sm">クリア</button>
+                            </td>
+                        </tr>
+                    </table>
                 </div>
             </div>
         </div>
