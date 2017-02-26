@@ -1,14 +1,14 @@
 @**
-  * メモ作成画面.
-  *
-  * @param memoForm
-  * @param count 操作日に作成済のメモ件数
-  * @param memoList 親メモコンボボックス用
-  * @param request
-  * @param messages
-  * @param webJarAssets
-  * @param flash
-  *@
+* メモ作成画面.
+*
+* @param memoForm
+* @param count 操作日に作成済のメモ件数
+* @param memoList 親メモコンボボックス用
+* @param request
+* @param messages
+* @param webJarAssets
+* @param flash
+*@
 @(memoForm: Form[forms.MemoForm], count: Option[Int], memoList: List[models.Memo])(implicit request: RequestHeader, messages: Messages, webJarAssets: WebJarAssets, flash:Flash)
 @import helper._
 @import scala.concurrent.Await
@@ -17,28 +17,28 @@
 
 @main(Messages("screen.editmemo")){
 <script type="text/javascript">
-	$(function(){
-	    // 初期表示時点の文字数
-		var initLength = $('textarea#db_content').val().length;
-	    $('span#inputLength').text(initLength)
-	    // 入力中の文字数
-	    $('textarea#db_content').on('load keydown keyup keypress change', function(){
-	        var inLength = $(this).val().length;
-	        $('span#inputLength').text(inLength)
-	    })
-	    // 経過時間カウント
-	    var sec = 0;
-	    setInterval(function(){
-	        $('span#elapsedTime').text(++sec);
-	        // 45秒を過ぎるとフォントサイズ大、赤にする
-	        if (sec >= 45) {
+    $(function(){
+        // 初期表示時点の文字数
+        var initLength = $('textarea#db_content').val().length;
+        $('span#inputLength').text(initLength)
+        // 入力中の文字数
+        $('textarea#db_content').on('load keydown keyup keypress change', function(){
+            var inLength = $(this).val().length;
+            $('span#inputLength').text(inLength)
+        })
+        // 経過時間カウント
+        var sec = 0;
+        setInterval(function(){
+            $('span#elapsedTime').text(++sec);
+            // 45秒を過ぎるとフォントサイズ大、赤にする
+            if (sec >= 45) {
                 $('small#courseTime').css({
                     "color": "red",
                     "font-size": "16px"
                 });
-	        }
-	    },1000);
-	});
+            }
+        },1000);
+    });
 </script>
 @* ナビゲーション *@
 <nav class="navbar navbar-default navbar-fixed-top">
@@ -47,9 +47,9 @@
         <div class="navbar-header">
             <p class="navbar-brand">
                 @if(memoForm("command").value.getOrElse("")=="C") {
-                    メモ作成
+                メモ作成
                 }else{
-                    メモ編集
+                メモ編集
                 }
             </p>
             @* CREATE時のみ日毎の作成数、経過時間表示 *@
@@ -61,7 +61,7 @@
 </nav>
 @*メモ編集フォーム*@
 <div>
-@form(action=routes.EditThoughtMemoController.register()){
+    @form(action=routes.EditThoughtMemoController.register()){
     <input type="hidden" name="command" value="@memoForm("command").value">
     <input type="hidden" name="db.id" value="@memoForm("db.id").value">
     <input type="hidden" name="db.fav" value="@memoForm("db.fav").value">
@@ -69,53 +69,53 @@
         <tr valign="top">
             <td>
                 @(inputText(
-                    memoForm("db.title"),
-                    '_label -> "タイトル",
-                    '_help -> " ",
-                    'size -> 30,
-                    'class ->"form-control input-sm"
+                memoForm("db.title"),
+                '_label -> "タイトル",
+                '_help -> " ",
+                'size -> 30,
+                'class ->"form-control input-sm"
                 ))
             </td>
             <td>
                 @{
-                    var optionSeq: Seq[(String, String)] = Seq(("0", ""))
-                    memoList.foreach(memo => (optionSeq :+= (memo.id.get.toString, memo.title)))
-                    select(
-                        memoForm("db.parentId"),
-                        options = optionSeq,
-                        '_label -> "親メモ",
-                        '_help -> " ",
-                        '_showInfos -> false,
-                        'class ->"form-control input-sm"
-                    )
+                var optionSeq: Seq[(String, String)] = Seq(("0", ""))
+                memoList.foreach(memo => (optionSeq :+= (memo.id.get.toString, memo.title)))
+                select(
+                memoForm("db.parentId"),
+                options = optionSeq,
+                '_label -> "親メモ",
+                '_help -> " ",
+                '_showInfos -> false,
+                'class ->"form-control input-sm"
+                )
                 }
             </td>
             <td>
                 @(inputDate(
-                    memoForm("db.createDate"),
-                    '_label -> "日付",
-                    '_showInfos -> false,
-                    '_help -> " ",
-                    'readOnly -> true,
-                    'class -> "form-control input-sm"
+                memoForm("db.createDate"),
+                '_label -> "日付",
+                '_showInfos -> false,
+                '_help -> " ",
+                'readOnly -> true,
+                'class -> "form-control input-sm"
                 ))
             </td>
         </tr>
         <tr>
             <td colspan="3">
                 @input(
-                    memoForm("db.content"),
-                    '_label -> "本文",
-                    '_showInfos -> false,
-                    '_help -> ""
-                ) {(id, name, value, args)  =>
-                    <textarea class="form-control input-sm" id="@id" name="@name" cols="100" rows="5" @toHtmlArgs(args)>@value</textarea>
+                memoForm("db.content"),
+                '_label -> "本文",
+                '_showInfos -> false,
+                '_help -> ""
+                ) {(id, name, value, args)    =>
+                <textarea class="form-control input-sm" id="@id" name="@name" cols="100" rows="5" @toHtmlArgs(args)>@value</textarea>
                 }
                 <p><span id="inputLength">0</span>文字</p>
             </td>
         </tr>
     </table>
     <input type="submit" class="btn btn-default btn-sm" value="登録"></input>
-}
+    }
 </div>
 }

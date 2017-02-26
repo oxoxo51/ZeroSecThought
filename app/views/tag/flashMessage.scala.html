@@ -1,7 +1,7 @@
 @**
-  * flashメッセージ表示エリア.
-  * サーバーから渡されたSuccess/Errorメッセージを表示する.
-  *@
+* flashメッセージ表示エリア.
+* サーバーから渡されたSuccess/Errorメッセージを表示する.
+*@
 
 @(message: Option[String])(implicit request: RequestHeader, messages: Messages, webJarAssets: WebJarAssets)
 @import constant.Constant
@@ -15,13 +15,13 @@ $(function() {
 
 @request.flash.get(Constant.MSG_SUCCESS).orElse(message).map{msg =>
 <div class="alert alert-success alert-dismissable">
-    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-    <strong>@Html(msg)</strong>
+  <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+  <strong>@Html(msg)</strong>
 </div>
 }
 @request.flash.get(Constant.MSG_ERROR).map{msg =>
 <div class="alert alert-danger alert-dismissable">
-    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-    <strong>@msg</strong>
+  <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+  <strong>@msg</strong>
 </div>
 }
