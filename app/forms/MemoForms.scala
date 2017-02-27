@@ -22,8 +22,8 @@ object MemoForms {
       "db" -> mapping(
         "id" -> optional(longNumber),
         "parentId" -> optional(longNumber),
-        "title" -> nonEmptyText,
-        "content" -> nonEmptyText,
+        "title" -> nonEmptyText(maxLength=30),
+        "content" -> nonEmptyText(maxLength=400),
         "createDate" -> sqlDate("yyyy-MM-dd"),
         "fav" -> text
       )

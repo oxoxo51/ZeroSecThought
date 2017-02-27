@@ -21,8 +21,8 @@ object MemoTemplateForms {
       "db" -> mapping(
         "id" -> optional(longNumber),
         "parentId" -> optional(longNumber),
-        "title" -> nonEmptyText,
-        "content" -> text
+        "title" -> nonEmptyText(maxLength=30),
+        "content" -> text(maxLength=400)
       )
       (
         (id, parentId, title, content)
