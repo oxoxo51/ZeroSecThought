@@ -9,3 +9,7 @@ screen.editmemo = メモ作成・編集画面
 screen.edittemplate = テンプレート作成・編集画面
 
 index.info = <a href="/edit/0">本日メモを{0}件書いています。1日10件はメモを書きましょう。</a>
+
+#validation
+error.maxLength={0}文字以内で入力してください。
+error.required=必須項目です。
