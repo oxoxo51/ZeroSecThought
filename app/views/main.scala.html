@@ -1,33 +1,33 @@
 @**
-  * メイン.
-  * view作成時は本クラスにタイトル、HTMLヘッダ、HTMLコンテンツを引数として渡す.
-  * 本クラス内で外部のjavascriptやスタイルシートを読み込んだうえで、
-  * ページヘッダ、メッセージ、コンテンツを描画する.
-  *
-  * @param title
-  * @param header
-  * @param content
-  * @param request
-  * @param messages
-  * @param webJarAssets
-  *@
+* メイン.
+* view作成時は本クラスにタイトル、HTMLヘッダ、HTMLコンテンツを引数として渡す.
+* 本クラス内で外部のjavascriptやスタイルシートを読み込んだうえで、
+* ページヘッダ、メッセージ、コンテンツを描画する.
+*
+* @param title
+* @param header
+* @param content
+* @param request
+* @param messages
+* @param webJarAssets
+*@
 @(title: String)(content: Html)(implicit request: RequestHeader, messages: Messages, webJarAssets: WebJarAssets)
 
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <title>@title</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"">
-        <link rel="shortcut icon" type="image/png" href="@routes.Assets.versioned("images/favicon.png")">
-        <link rel='stylesheet' href='@routes.WebJarAssets.at(webJarAssets.locate("css/bootstrap.css"))'>
-        <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/jPages.css")">
-        <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/main.css")">
-        <script type='text/javascript' src='@routes.WebJarAssets.at(webJarAssets.locate("jquery.js"))'></script>
-        <script type='text/javascript' src='@routes.WebJarAssets.at(webJarAssets.locate("bootstrap.js"))'></script>
-        <script type='text/javascript' src='@routes.Assets.versioned("javascripts/jPages.js")'></script>
-    </head>
-    <body>
-        @* 各ページHTML*@
-        @content
-    </body>
+<head>
+  <title>@title</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"">
+  <link rel="shortcut icon" type="image/png" href="@routes.Assets.versioned("images/favicon.png")">
+  <link rel='stylesheet' href='@routes.WebJarAssets.at(webJarAssets.locate("css/bootstrap.css"))'>
+  <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/jPages.css")">
+  <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/main.css")">
+  <script type='text/javascript' src='@routes.WebJarAssets.at(webJarAssets.locate("jquery.js"))'></script>
+  <script type='text/javascript' src='@routes.WebJarAssets.at(webJarAssets.locate("bootstrap.js"))'></script>
+  <script type='text/javascript' src='@routes.Assets.versioned("javascripts/jPages.js")'></script>
+</head>
+<body>
+@* 各ページHTML*@
+@content
+</body>
 </html>

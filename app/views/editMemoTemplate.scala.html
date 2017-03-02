@@ -5,63 +5,63 @@
 @main(Messages("screen.edittemplate")){
 @* ナビゲーション *@
 <nav class="navbar navbar-default navbar-fixed-top">
-    @tag.flashMessage(None)
-    <div class="container-fluid">
-        <div class="navbar-header">
-            <p class="navbar-brand">
-                @if(templateForm("command").value.getOrElse("")=="C") {
-                    テンプレート作成
-                }else{
-                    テンプレート編集
-                }
-            </p>
-        </div>
+  @tag.flashMessage(None)
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <p class="navbar-brand">
+        @if(templateForm("command").value.getOrElse("")=="C") {
+        テンプレート作成
+        }else{
+        テンプレート編集
+        }
+      </p>
     </div>
+  </div>
 </nav>
 <div>
-    @form(action=routes.EditMemoTemplateController.register()){
-    <input type="hidden" name="command" value="@templateForm("command").value">
-    <input type="hidden" name="db.id" value="@templateForm("db.id").value">
-    <table>
-        <tr valign="top">
-            <td>
-                @(inputText(
-                templateForm("db.title"),
-                '_label -> "タイトル",
-                '_help -> " ",
-                'size -> 30,
-                'class ->"form-control input-sm"
-                ))
-            </td>
-            <td>
-                @{
-                var optionSeq: Seq[(String, String)] = Seq(("0", ""))
-                memoList.foreach(memo => (optionSeq :+= (memo.id.get.toString, memo.title)))
-                select(
-                templateForm("db.parentId"),
-                options = optionSeq,
-                '_label -> "親メモ",
-                '_help -> " ",
-                '_showInfos -> false,
-                'class ->"form-control input-sm"
-                )
-                }
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2">
-                @input(
-                templateForm("db.content"),
-                '_label -> "本文",
-                '_showInfos -> false,
-                '_help -> ""
-                ) {(id, name, value, args)  =>
-                <textarea class="form-control input-sm" id="@id" name="@name" cols="100" rows="5" @toHtmlArgs(args)>@value</textarea>
-                }
-            </td>
-        </tr>
-    </table>
-    <input type="submit" class="btn btn-default btn-sm" value="登録"></input>
-    }
+  @form(action=routes.EditMemoTemplateController.register()){
+  <input type="hidden" name="command" value="@templateForm("command").value">
+  <input type="hidden" name="db.id" value="@templateForm("db.id").value">
+  <table>
+    <tr valign="top">
+      <td>
+        @(inputText(
+        templateForm("db.title"),
+        '_label -> "タイトル",
+        '_help -> " ",
+        'size -> 30,
+        'class ->"form-control input-sm"
+        ))
+      </td>
+      <td>
+        @{
+        var optionSeq: Seq[(String, String)] = Seq(("0", ""))
+        memoList.foreach(memo => (optionSeq :+= (memo.id.get.toString, memo.title)))
+        select(
+        templateForm("db.parentId"),
+        options = optionSeq,
+        '_label -> "親メモ",
+        '_help -> " ",
+        '_showInfos -> false,
+        'class ->"form-control input-sm"
+        )
+        }
+      </td>
+    </tr>
+    <tr>
+      <td colspan="2">
+        @input(
+        templateForm("db.content"),
+        '_label -> "本文",
+        '_showInfos -> false,
+        '_help -> ""
+        ) {(id, name, value, args)  =>
+        <textarea class="form-control input-sm" id="@id" name="@name" cols="100" rows="5" @toHtmlArgs(args)>@value</textarea>
+        }
+      </td>
+    </tr>
+  </table>
+  <input type="submit" class="btn btn-default btn-sm" value="登録"></input>
+  }
 </div>
 }
