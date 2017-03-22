@@ -2,8 +2,9 @@
 
 # --- !Ups
 
-ALTER TABLE "memo" ALTER COLUMN "create_date" TYPE timestamp SET DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE "memo" ALTER COLUMN "create_date" TYPE timestamp;
+ALTER TABLE "memo" ALTER COLUMN "create_date" SET DEFAULT CURRENT_TIMESTAMP;
 
 # --- !Downs
 
-ALTER TABLE "memo" ALTER COLUMN "create_date" date;
+ALTER TABLE "memo" ALTER COLUMN "create_date" TYPE date;
