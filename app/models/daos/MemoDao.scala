@@ -125,7 +125,10 @@ class MemoDao @Inject()(dbConfigProvider: DatabaseConfigProvider) {
     * @return
     */
   def create(memo: Memo): Future[Int] = {
-    dbConfig.db.run(memos += memo)
+    // 作成日付にデフォルト値を設定するため敢えて消す
+//    dbConfig.db.run(memos += memo)
+    dbConfig.db.run( memos.map(m => (m.parentId, m.title, m.content, m.fav))
+      += ((memo.parentId.get, memo.title, memo.content, memo.fav)))
   }
 
   /**

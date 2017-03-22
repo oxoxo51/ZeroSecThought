@@ -22,11 +22,15 @@ case class Memo
   content: String,
   createDate: java.sql.Date,
   fav: String
-)
+) {
+  def withoutCreateDate(memo: Memo) = {
+
+  }
+}
 
 /* メモエンティティ-JSONの変換 */
 object Memo {
-  val sqlDateWrite = Writes.sqlDateWrites("yyyy/MM/dd")
+  val sqlDateWrite = Writes.sqlDateWrites("yyyy/MM/dd HH:mm:ss")
   implicit lazy val memoWrites: Writes[Memo] = (
     (__ \ "id").write[Option[Long]] and
     (__ \ "parentId").write[Option[Long]] and
