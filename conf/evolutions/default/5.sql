@@ -2,7 +2,7 @@
 
 # --- !Ups
 
-ALTER TABLE "memo" ALTER COLUMN "create_date" timestamp default CURRENT_TIMESTAMP NOT NULL;
+ALTER TABLE "memo" ALTER COLUMN "create_date" timestamp NOT NULL default CURRENT_TIMESTAMP;
 
 # --- !Downs
 
